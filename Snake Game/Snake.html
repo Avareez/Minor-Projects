@@ -135,9 +135,32 @@
             }
         }
 
-        // Wywołanie odświeżenia strony po kliknięciu na przycisk
+        // Reset gry
         function refreshPage() {
-            location.reload();
+            snake.direction = 'right';
+            snake.body = [
+                { x: 6, y: 8 },
+                { x: 5, y: 8 },
+                { x: 4, y: 8 }
+            ];
+            gameStarted = false;
+            clearInterval(snakeLoop);
+            document.getElementById('refreshBtn').style.display = 'none';
+
+            const gameBoard = document.getElementById('gameBoard');
+            game.render(gameBoard);
+
+            // Usunięcie jabłka i dodanie nowego na pozycji początkowej
+            const oldApple = document.querySelector('.apple');
+            if (oldApple) {
+                oldApple.parentNode.removeChild(oldApple);
+            }
+            const appleDiv = document.createElement('div');
+            appleDiv.classList.add('apple');
+            appleDiv.setAttribute('data-x', 10);
+            appleDiv.setAttribute('data-y', 8);
+            const appleBox = document.querySelector(`.box[data-x="10"][data-y="8"]`);
+            appleBox.appendChild(appleDiv);
         }
 
         // Przy każdym keydownie włącza funckje antyscrollową dla strzałek
@@ -219,7 +242,7 @@
 
                 // Sprawdzenie kolizji z brzegami planszy i ciałem własnym
                 if (game.checkCollision(newHead) || this.checkSelfCollision(newHead)) {
-                    clearInterval(snakeLoop);
+                    clearInterval(snakeLoop); // Zatrzymanie interwału
                     document.getElementById('refreshBtn').style.display = 'block';
                     return;
                 }
@@ -258,7 +281,6 @@
                     game.placeApple();
                 }
             },
-            // Funkcja zwiększająca rozmiar węża
             grow() {
                 const newTail = { ...this.body[this.body.length - 1] };
                 this.body.push(newTail);
@@ -267,13 +289,14 @@
 
         // Funkcja do poruszania wężem
         function kd(event) {
+            // Rozpoczyna grę strzałkami
             if (!gameStarted && event.key.startsWith('Arrow')) {
                 gameStarted = true;
 
                 snakeLoop = setInterval(() => {
                     snake.move();
                     snake.renderSnake();
-                }, 200);
+                }, 140);
             }
 
             // WYznacza kierunek
