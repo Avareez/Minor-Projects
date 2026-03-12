@@ -1,5 +1,5 @@
 {
-  "name": "map-gen",
+  "name": "map-maker",
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
