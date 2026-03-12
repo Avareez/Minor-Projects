@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="pl-PL">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pathfinder</title>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            background-color: snow;
+            font-family: Arial, sans-serif;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(9, 50px);
+            gap: 2px;
+        }
+
+        .cell {
+            width: 50px;
+            height: 50px;
+            background-color: #f0f0f0;
+            border: 1px solid #333;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            cursor: pointer;
+        }
+
+        .start {
+            background-color: green;
+            color: white;
+        }
+
+        .end {
+            background-color: red;
+            color: white;
+        }
+
+        .obstacle {
+            background-color: black;
+        }
+
+        button {
+            margin-top: 20px;
+            padding: 10px 20px;
+            font-size: 16px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="grid" id="grid"></div>
+    <button onclick="findPath()">Znajdź ścieżkę</button>
+
+    <script>
+        const rows = 9;
+        const cols = 9;
+        const grid = document.getElementById('grid');
+        let board = Array.from({ length: rows }, () => Array(cols).fill(''));
+        let start = null;
+        let end = null;
+
+        function createGrid() {
+            for (let r = 0; r < rows; r++) {
+                for (let c = 0; c < cols; c++) {
+                    const cell = document.createElement('div');
+                    cell.classList.add('cell');
+                    cell.dataset.row = r;
+                    cell.dataset.col = c;
+
+                    cell.addEventListener('click', () => {
+                        handleCellClick(r, c, cell);
+                    });
+
+                    grid.appendChild(cell);
+                }
+            }
+        }
+
+        function handleCellClick(r, c, cell) {
+            if (!start) {
+                cell.classList.add('start');
+                cell.textContent = 'M';
+                start = [r, c];
+                board[r][c] = 'M';
+            } else if (!end && board[r][c] === '') {
+                cell.classList.add('end');
+                cell.textContent = 'S';
+                end = [r, c];
+                board[r][c] = 'S';
+            } else if (board[r][c] === '') {
+                cell.classList.add('obstacle');
+                board[r][c] = 'X';
+            } else if (board[r][c] === 'M') {
+                cell.classList.remove('start');
+                cell.textContent = '';
+                start = null;
+                board[r][c] = '';
+            } else if (board[r][c] === 'S') {
+                cell.classList.remove('end');
+                cell.textContent = '';
+                end = null;
+                board[r][c] = '';
+            } else if (board[r][c] === 'X') {
+                cell.classList.remove('obstacle');
+                board[r][c] = '';
+            }
+        }
+
+        class ShortestPathChessboard {
+            constructor(board) {
+                this.board = board;
+                this.rows = board.length;
+                this.cols = board[0].length;
+                this.directions = [
+                    [-1, 0], [1, 0], [0, -1], [0, 1]
+                ];
+            }
+
+            isValid(x, y) {
+                return x >= 0 && x < this.rows && y >= 0 && y < this.cols && this.board[x][y] !== 'X';
+            }
+
+            bfs() {
+                if (!start || !end) {
+                    alert("Ustaw punkt startowy 'M' oraz punkt docelowy 'S'.");
+                    return null;
+                }
+
+                const queue = [[start, [start]]];
+                const visited = new Set([start.toString()]);
+
+                while (queue.length > 0) {
+                    const [[x, y], path] = queue.shift();
+
+                    if (x === end[0] && y === end[1]) {
+                        return path;
+                    }
+
+                    for (const [dx, dy] of this.directions) {
+                        const nx = x + dx;
+                        const ny = y + dy;
+
+                        if (this.isValid(nx, ny) && !visited.has([nx, ny].toString())) {
+                            visited.add([nx, ny].toString());
+                            queue.push([[nx, ny], [...path, [nx, ny]]]);
+                        }
+                    }
+                }
+
+                return null;
+            }
+        }
+
+        function findPath() {
+            const solver = new ShortestPathChessboard(board);
+            const path = solver.bfs();
+
+            if (path) {
+                highlightPath(path);
+                console.log("Znaleziono najkrótszą ścieżkę:", path);
+            } else {
+                console.log("Brak ścieżki do celu.");
+                alert("Brak dostępnej ścieżki.");
+            }
+        }
+
+        function highlightPath(path) {
+            path.forEach(([r, c], index) => {
+                const cell = document.querySelector(`.cell[data-row='${r}'][data-col='${c}']`);
+                if (!cell.classList.contains('start') && !cell.classList.contains('end')) {
+                    cell.style.backgroundColor = index === path.length - 1 ? 'red' : 'lightblue';
+                }
+            });
+        }
+
+        createGrid();
+    </script>
+</body>
+
+</html>
