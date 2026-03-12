@@ -1,0 +1,9 @@
+{
+    "entryPoints": [
+        "src/index.ts",
+        "src/spriteEditor.ts"
+    ],
+    "out": "docs",
+    "name": "Sprite Editor Project",
+    "includeVersion": true
+}

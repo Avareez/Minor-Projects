@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="pl-PL">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Generator map - Uchacz</title>
+  <link rel="stylesheet" href="src/styles.css">
+</head>
+
+<body>
+  <div id="itemsDiv">
+    <h2>Items</h2>
+    <div id="spritesContainer"></div>
+  </div>
+  <div id="mapDiv">
+    <h2 id="maph2">Map - <input type="checkbox" name="auto" id="auto"> automat
+    </h2>
+    <canvas id="map" width="1008" height="1008"></canvas>
+  </div>
+  <input type="file" id="fileInput" style="display:none;" accept=".json" />
+  <script src="dist/bundle.js"></script>
+</body>
+
+</html>

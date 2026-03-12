@@ -1,0 +1,62 @@
+* {
+    background-color: black;
+}
+
+h2 {
+    color: white;
+    text-align: center;
+    width: 100%;
+}
+
+canvas {
+    border: 1px solid white;
+}
+
+#spritesContainer {
+    width: 480px;
+    float: left;
+    display: flex;
+    flex-wrap: wrap;
+    cursor: pointer;
+}
+
+.sprite-canvas {
+    width: 24px;
+    height: 24px;
+    margin: 2px;
+}
+
+.sprite-canvas:hover {
+    border: 1px solid red;
+}
+
+#itemsDiv {
+    width: 480px;
+    float: left;
+    display: flex;
+    flex-wrap: wrap;
+    cursor: pointer;
+}
+
+#mapDiv {
+    width: 66%;
+    float: right;
+    cursor: pointer;
+    position: relative;
+}
+
+#maph2 {
+    width: 1010px;
+}
+
+.white {
+    color: white;
+}
+
+.selected {
+    border: 2px solid red;
+}
+
+.hovered {
+    border: 2px solid green;
+}
