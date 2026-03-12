@@ -1,0 +1,870 @@
+<!DOCTYPE html>
+<html lang="pl-PL">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Uchacz - Statki</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: snow;
+        }
+
+        h1 {
+            position: absolute;
+            left: 0;
+            top: 0;
+            background-color: darkslategrey;
+            color: snow;
+            width: 100%;
+            padding: 20px;
+            text-align: left;
+        }
+
+        #gameBoard {
+            position: absolute;
+            top: 110px;
+            left: 50%;
+            margin-left: -825px;
+            color: darkslategrey;
+            width: 1650px;
+            height: auto;
+            background-color: darkslategrey;
+            padding: 10px;
+        }
+
+        #ships {
+            background-color: snow;
+            border: darkslategrey 2px solid;
+            /*border-radius: 5px;*/
+            width: 260px;
+            height: 600px;
+            float: left;
+            margin-right: 10px;
+        }
+
+        #ships>* {
+            display: block;
+            margin: 10px;
+        }
+
+        #left {
+            background-color: snow;
+            border: darkslategrey 2px solid;
+            width: 600px;
+            height: 600px;
+            float: left;
+            margin-right: 10px;
+
+        }
+
+        #middle {
+            border: darkslategrey 2px solid;
+            width: 140px;
+            height: 600px;
+            float: left;
+            margin-right: 10px;
+
+        }
+
+        #right {
+            background-color: snow;
+            border: darkslategrey 2px solid;
+            width: 600px;
+            height: 600px;
+            float: left;
+
+        }
+
+        button {
+            width: 120px;
+            height: 30px;
+            background-color: darkslategrey;
+            border: 2px solid snow;
+            color: snow;
+            font-size: 20px;
+            float: left;
+
+        }
+
+        button:hover {
+            color: darkslategrey;
+            background-color: snow;
+            border: 2px solid #2f4f4f;
+            float: left;
+
+        }
+
+        #playBTN {
+            margin-top: 200%;
+            margin-left: 8px;
+        }
+
+        #restartBTN {
+            margin-top: 200%;
+            margin-left: 8px;
+        }
+
+        .c4 {
+            height: 60px;
+            width: 240px;
+        }
+
+        .c3 {
+            height: 60px;
+            width: 180px;
+        }
+
+        .c2 {
+            height: 60px;
+            width: 120px;
+        }
+
+        .c1 {
+            height: 60px;
+            width: 60px;
+        }
+
+        #jedynka1 {
+            float: left;
+        }
+
+        #jedynka2 {
+            float: left;
+        }
+
+        #jedynka3 {
+            float: left;
+        }
+
+        .e1,
+        .e2,
+        .e3,
+        .e4 {
+            border: #2F4F4F solid 1px;
+            background-color: #93B5B5;
+            width: 60px;
+            height: 60px;
+            float: left;
+        }
+
+        #botTable {
+            width: 100%;
+            height: 100%;
+        }
+
+        #playerTable {
+            width: 100%;
+            height: 100%;
+        }
+
+        #msgDiv {
+            position: absolute;
+            top: 740px;
+            left: 50%;
+            margin-left: -825px;
+            color: white;
+            width: 1650px;
+            height: auto;
+            background-color: darkslategrey;
+            padding: 10px;
+            text-align: center;
+            font-size: 20px;
+            font-weight: 600;
+        }
+
+        .hitImg {
+            background-image: url(/gfx/X.png);
+            background-size: cover;
+            background-repeat: no-repeat;
+        }
+
+        .missImg {
+            background-image: url(/gfx/Dot.png);
+            background-size: cover;
+            background-repeat: no-repeat;
+        }
+    </style>
+</head>
+
+<body onload="game()" oncontextmenu="shipRotate();event.preventDefault();">
+    <h1>Statki</h1>
+    <div id="gameBoard">
+        <div id="ships">
+            <div id="czworka1" class="c4">
+                <div class="e4" onclick="chooseShip(this);" onmouseover="change(this);" onmouseout="unchange(this);">
+                </div>
+                <div class="e4" onclick="chooseShip(this);" onmouseover="change(this);" onmouseout="unchange(this);">
+                </div>
+                <div class="e4" onclick="chooseShip(this);" onmouseover="change(this);" onmouseout="unchange(this);">
+                </div>
+                <div class="e4" onclick="chooseShip(this);" onmouseover="change(this);" onmouseout="unchange(this);">
+                </div>
+            </div>
+            <div id="trojka1" class="c3">
+                <div class="e3" onclick="chooseShip(this);" onmouseover="change(this);" onmouseout="unchange(this);">
+                </div>
+                <div class="e3" onclick="chooseShip(this);" onmouseover="change(this);" onmouseout="unchange(this);">
+                </div>
+                <div class="e3" onclick="chooseShip(this);" onmouseover="change(this);" onmouseout="unchange(this);">
+                </div>
+            </div>
+            <div id="trojka2" class="c3">
+                <div class="e3" onclick="chooseShip(this);" onmouseover="change(this);" onmouseout="unchange(this);">
+                </div>
+                <div class="e3" onclick="chooseShip(this);" onmouseover="change(this);" onmouseout="unchange(this);">
+                </div>
+                <div class="e3" onclick="chooseShip(this);" onmouseover="change(this);" onmouseout="unchange(this);">
+                </div>
+            </div>
+            <div id="dwojka1" class="c2">
+                <div class="e2" onclick="chooseShip(this);" onmouseover="change(this);" onmouseout="unchange(this);">
+                </div>
+                <div class="e2" onclick="chooseShip(this);" onmouseover="change(this);" onmouseout="unchange(this);">
+                </div>
+            </div>
+            <div id="dwojka2" class="c2">
+                <div class="e2" onclick="chooseShip(this);" onmouseover="change(this);" onmouseout="unchange(this);">
+                </div>
+                <div class="e2" onclick="chooseShip(this);" onmouseover="change(this);" onmouseout="unchange(this);">
+                </div>
+            </div>
+            <div id="dwojka3" class="c2">
+                <div class="e2" onclick="chooseShip(this);" onmouseover="change(this);" onmouseout="unchange(this);">
+                </div>
+                <div class="e2" onclick="chooseShip(this);" onmouseover="change(this);" onmouseout="unchange(this);">
+                </div>
+            </div>
+            <div id="jedynka1" class="c1">
+                <div class="e1" onclick="chooseShip(this);" onmouseover="change(this);" onmouseout="unchange(this);">
+                </div>
+            </div>
+            <div id="jedynka2" class="c1">
+                <div class="e1" onclick="chooseShip(this);" onmouseover="change(this);" onmouseout="unchange(this);">
+                </div>
+            </div>
+            <div id="jedynka3" class="c1">
+                <div class="e1" onclick="chooseShip(this);" onmouseover="change(this);" onmouseout="unchange(this);">
+                </div>
+            </div>
+            <div id="jedynka4" class="c1">
+                <div class="e1" onclick="chooseShip(this);" onmouseover="change(this);" onmouseout="unchange(this);">
+                </div>
+            </div>
+        </div>
+        <div id="left">
+            <table id="playerTable"></table>
+        </div>
+        <div id="middle">
+            <button id="playBTN" onclick="startGame()">PLAY</button>
+            <button id="restartBTN" onclick="game()">RESTART</button>
+        </div>
+        <div id="right">
+            <table id="botTable"></table>
+        </div>
+    </div>
+    <div id="msgDiv">
+    </div>
+    <script>
+        // Do wyświetlania informacji dla gracza
+        const msgDiv = document.getElementById('msgDiv');
+        msgDiv.style.display = "none"
+        document.getElementById('playBTN').style.display = 'none';
+
+        // Stała zawierająca funkcje gry
+        const Game = {
+            N: 10,
+            board: [],
+            playerBoard: [],
+            botShotsBoard: [],
+            playerShotsBoard: [],
+
+            // Funkcja tworząca planszę gry
+            initializeBoard() {
+                for (let i = 0; i < this.N + 2; i++) {
+                    this.board[i] = [];
+                    for (let j = 0; j < this.N + 2; j++) {
+                        this.board[i][j] = 0; // Wypełnienie planszy zerami
+                    }
+                }
+                for (let i = 0; i < this.N + 2; i++) {
+                    this.playerBoard[i] = [];
+                    for (let j = 0; j < this.N + 2; j++) {
+                        this.playerBoard[i][j] = 0;
+                    }
+                }
+                for (let i = 0; i < this.N + 2; i++) {
+                    this.botShotsBoard[i] = [];
+                    for (let j = 0; j < this.N + 2; j++) {
+                        this.botShotsBoard[i][j] = 0;
+                    }
+                }
+                for (let i = 0; i < this.N + 2; i++) {
+                    this.playerShotsBoard[i] = [];
+                    for (let j = 0; j < this.N + 2; j++) {
+                        this.playerShotsBoard[i][j] = 0;
+                    }
+                }
+            },
+
+            // Funkcja wywołująca rozstawianie statków bota
+            generateShips() {
+                const ships = [4, 3, 3, 2, 2, 2, 1, 1, 1, 1];
+
+                for (let i = 0; i < ships.length; i++) {
+                    this.generateRandomShip(ships[i]);
+                }
+            },
+
+            // Funkcja rozstawiająca statki bota na jego planszy
+            generateRandomShip(size) {
+                let x, y, direction, available;
+
+                do {
+                    available = true;
+                    // losowanie koordynatów
+                    x = Math.floor(Math.random() * this.N) + 1;
+                    y = Math.floor(Math.random() * this.N) + 1;
+                    // losowanie kierunku zwrotu 50/50
+                    direction = Math.random() < 0.5 ? 'horizontal' : 'vertical';
+
+                    if (direction === 'vertical') {
+                        // Sprawdza czy statek mieści się w granicach planszy
+                        if (x + size > this.N + 1) {
+                            available = false;
+                            continue;
+                        }
+                        // Sprawdza  czy wylosowane współrzędne i obszar wokół są puste
+                        for (let i = x; i < x + size; i++) {
+                            if (this.board[i][y] !== 0 || !this.isAreaClear(i, y, size, 'vertical')) {
+                                available = false;
+                                break;
+                            }
+                        }
+                    } else if (direction === 'horizontal') {
+                        if (y + size > this.N + 1) {
+                            available = false;
+                            continue;
+                        }
+                        for (let j = y; j < y + size; j++) {
+                            if (this.board[x][j] !== 0 || !this.isAreaClear(x, j, size, 'horizontal')) {
+                                available = false;
+                                break;
+                            }
+                        }
+                    }
+                } while (!available);
+
+                // Postawienie statku na planszy
+                if (direction === 'vertical') {
+                    for (let i = x; i < x + size; i++) {
+                        this.board[i][y] = 1;
+                    }
+                } else if (direction === 'horizontal') {
+                    for (let j = y; j < y + size; j++) {
+                        this.board[x][j] = 1;
+                    }
+                }
+            },
+
+            // Funkcja sprawdzająca czy wylosowane współrzędne i obszar wokół są puste
+            isAreaClear(x, y, size, direction) {
+                const startX = (x - 1 > 0) ? x - 1 : x;
+                const startY = (y - 1 > 0) ? y - 1 : y;
+                const endX = (direction === 'vertical') ? x + size : x + 1;
+                const endY = (direction === 'horizontal') ? y + size : y + 1;
+
+                // Sprawdza obszar od 2 komórki szerszy i dłuższy od rozmiarów statku
+                for (let i = startX; i <= endX; i++) {
+                    for (let j = startY; j <= endY; j++) {
+                        if (i >= 1 && j >= 1 && i <= this.N && j <= this.N) {
+                            if (this.board[i][j] !== 0) {
+                                return false;
+                            }
+                        }
+                    }
+                }
+                return true;
+            },
+
+            // Funkcja wstawiająca tabele  na stronie
+            renderBoard() {
+                const botTable = document.getElementById('botTable');
+                botTable.innerHTML = "";
+                botTable.style.borderCollapse = 'collapse';
+                for (let i = 1; i <= this.N; i++) {
+                    const row = document.createElement('tr');
+                    for (let j = 1; j <= this.N; j++) {
+                        const cell = document.createElement('td');
+                        cell.style.border = '1px solid #2f4f4f';
+                        row.appendChild(cell);
+                    }
+                    botTable.appendChild(row);
+                }
+
+                // Generowanie tabeli gracza
+                const playerTable = document.getElementById('playerTable');
+                playerTable.innerHTML = "";
+                playerTable.style.borderCollapse = 'collapse';
+                for (let i = 1; i <= this.N; i++) {
+                    const row = document.createElement('tr');
+                    for (let j = 1; j <= this.N; j++) {
+                        const cell = document.createElement('td');
+                        cell.style.border = '1px solid #2f4f4f';
+                        if (this.playerBoard[i][j] === 1) {
+                            cell.style.backgroundColor = 'gray';
+                        }
+                        row.appendChild(cell);
+                    }
+                    playerTable.appendChild(row);
+                }
+            }
+        };
+
+
+        // -------------------- Rozstawianie statków przez gracza --------------------
+
+        let selectedShip = null;
+        let previousShip = null;
+        chooseShip(document.getElementById("czworka1").firstChild); // Początkowy wybrany statek
+        let shipDirection = 'horizontal';
+
+        // Hoover statków, gdy są po lewej stronie, jeszcze nie ułozone
+        function change(x) {
+            if (selectedShip !== x.parentElement) {
+                const el = x.parentElement.children;
+                for (let i = 0; i < el.length; i++) el[i].style.backgroundColor = "#678282";
+            }
+        }
+
+        // Unhoover
+        function unchange(x) {
+            if (selectedShip !== x.parentElement) {
+                const el = x.parentElement.children;
+                for (let i = 0; i < el.length; i++) el[i].style.backgroundColor = "#93B5B5";
+            }
+        }
+
+        // Funkcja zmianiająca kolor statku z lewej strony
+        function chooseShip(x) {
+            // Zmiana poprzedniego wybranego statku na kolor domyślny
+            if (selectedShip !== null) {
+                previousShip = selectedShip;
+                const prevEl = previousShip.children;
+                for (let i = 0; i < prevEl.length; i++) prevEl[i].style.backgroundColor = "#93B5B5";
+            }
+            // Nowy wybrany statek
+            const el = x.parentElement.children;
+            const parent = x.parentElement;
+            selectedShip = parent;
+            console.log(selectedShip)
+            for (let i = 0; i < el.length; i++) el[i].style.backgroundColor = "gray";
+        }
+
+        // Funkcja zmieniająca orientację statku
+        function shipRotate() {
+            if (selectedShip !== null) {
+                if (shipDirection === 'horizontal') {
+                    shipDirection = 'vertical';
+                } else {
+                    shipDirection = 'horizontal';
+                }
+            }
+            console.log(shipDirection);
+        }
+
+        // Funkcja rysująca propozycję ułożenia statku na planszy gracza
+        function drawShip(event) {
+            if (selectedShip !== null) {
+                Game.renderBoard();
+                const playerTable = document.getElementById('playerTable');
+                const cellSize = 60;
+                const rect = playerTable.getBoundingClientRect(); // Pobranie współrzędnych planszy
+
+                // Obliczenie indeksu komórki, nad którą znajduje się kursor myszy
+                const cellX = Math.max(1, Math.floor((event.clientY - rect.top) / cellSize) + 1);
+                const cellY = Math.max(1, Math.floor((event.clientX - rect.left) / cellSize) + 1);
+                // !!! Pomieszałem cellX z cellY, ale nie będę już tego zmieniał, bo strasznie namieszam !!!
+
+                // Sprawdzenie rozmiaru statku
+                if (cellX <= Game.N && cellY <= Game.N) {
+                    let size;
+                    if (selectedShip.classList.contains('c4')) {
+                        size = 4;
+                    } else if (selectedShip.classList.contains('c3')) {
+                        size = 3;
+                    } else if (selectedShip.classList.contains('c2')) {
+                        size = 2;
+                    } else if (selectedShip.classList.contains('c1')) {
+                        size = 1;
+                    }
+
+                    let proposedShip = [];
+                    let canPlace = true;
+
+                    // Sprawdzenie, czy statek mieści się w granicach planszy i czy jego umieszczenie jest możliwe
+                    if (shipDirection === 'vertical') {
+                        if (cellX + size - 1 <= Game.N) {
+                            for (let i = cellX; i < cellX + size; i++) {
+                                proposedShip.push([i, cellY]);
+                                if (!isAreaClear2(Game.playerBoard, i, cellY, 1, 'vertical')) {
+                                    canPlace = false;
+                                }
+                            }
+                        } else {
+                            // Zawijanie statku na granicy dolnej
+                            for (let i = cellX; i < cellX + size; i++) {
+                                const x = i <= Game.N ? i : i - size; // Przesunięcie statku w górę planszy o rozmiar statku
+                                proposedShip.push([x, cellY]);
+                                if (!isAreaClear2(Game.playerBoard, x, cellY, 1, 'vertical')) {
+                                    canPlace = false;
+                                }
+                            }
+                        }
+                    } else if (shipDirection === 'horizontal') {
+                        if (cellY + size - 1 <= Game.N) {
+                            for (let j = cellY; j < cellY + size; j++) {
+                                proposedShip.push([cellX, j]);
+                                if (!isAreaClear2(Game.playerBoard, cellX, j, 1, 'horizontal')) {
+                                    canPlace = false;
+                                }
+                            }
+                        } else {
+                            // Zawijanie statku na granicy prawej
+                            for (let j = cellY; j < cellY + size; j++) {
+                                const y = j <= Game.N ? j : j - size; // Przesunięcie statku w lewo planszy  o rozmiar statku
+                                proposedShip.push([cellX, y]);
+                                if (!isAreaClear2(Game.playerBoard, cellX, y, 1, 'horizontal')) {
+                                    canPlace = false;
+                                }
+                            }
+                        }
+                    }
+
+                    // Rysowanie propozycji ułożenia statku na planszy gracza
+                    const cells = document.querySelectorAll('#playerTable td');
+
+                    if (canPlace) {
+                        proposedShip.forEach(coords => {
+                            const [x, y] = coords;
+                            const index = (x - 1) * Game.N + y - 1;
+                            cells[index].style.backgroundColor = 'green'; // Rysowanie propozycji na zielono
+                        });
+                    } else {
+                        proposedShip.forEach(coords => {
+                            const [x, y] = coords;
+                            const index = (x - 1) * Game.N + y - 1;
+                            cells[index].style.backgroundColor = 'red'; // Rysowanie niemożliwego ułożenia na czerwono
+                        });
+                    }
+                }
+            }
+        }
+
+        // Funkcja do umieszczania statku na planszy gracza
+        function placeShip(event) {
+            msgDiv.style.display = "none"
+            if (selectedShip !== null) {
+                const playerTable = document.getElementById('playerTable');
+                const cellSize = 60;
+                const rect = playerTable.getBoundingClientRect(); // Pobranie współrzędnych planszy
+
+                // Obliczenie indeksu komórki, w której użytkownik chce umieścić statek
+                const cellX = Math.max(1, Math.floor((event.clientY - rect.top) / cellSize) + 1);
+                const cellY = Math.max(1, Math.floor((event.clientX - rect.left) / cellSize) + 1);
+                // !!! Pomieszałem cellX z cellY, ale nie będę już tego zmieniał, bo strasznie namieszam !!!
+
+                // Sprawdzenie rozmiaru statku
+                if (cellX <= Game.N && cellY <= Game.N) {
+                    let size;
+                    if (selectedShip.classList.contains('c4')) {
+                        size = 4;
+                    } else if (selectedShip.classList.contains('c3')) {
+                        size = 3;
+                    } else if (selectedShip.classList.contains('c2')) {
+                        size = 2;
+                    } else if (selectedShip.classList.contains('c1')) {
+                        size = 1;
+                    }
+
+                    console.log(size, rect, cellX, cellY);
+
+                    let shipToPlace = [];
+                    let canPlace = true;
+
+                    // Sprawdzenie, czy statek mieści się w granicach planszy i czy jego umieszczenie jest możliwe
+                    if (shipDirection === 'vertical') {
+                        let wrapped = false;
+                        if (cellX + size - 1 > Game.N) {
+                            wrapped = true;
+                        }
+                        for (let i = cellX; i < cellX + size; i++) {
+                            let x = i;
+                            if (wrapped) {
+                                x = i <= Game.N ? i : i - size;
+                            }
+                            shipToPlace.push([x, cellY]);
+                            if (!isAreaClear2(Game.playerBoard, x, cellY, 1, 'vertical')) {
+                                canPlace = false;
+                                break;
+                            }
+                        }
+                    } else if (shipDirection === 'horizontal') {
+                        let wrapped = false;
+                        if (cellY + size - 1 > Game.N) {
+                            wrapped = true;
+                        }
+                        for (let j = cellY; j < cellY + size; j++) {
+                            let y = j;
+                            if (wrapped) {
+                                y = j <= Game.N ? j : j - size;
+                            }
+                            shipToPlace.push([cellX, y]);
+                            if (!isAreaClear2(Game.playerBoard, cellX, y, 1, 'horizontal')) {
+                                canPlace = false;
+                                break;
+                            }
+                        }
+                    }
+
+                    // Umieszczenie statku na planszy gracza
+                    if (canPlace) {
+                        if (shipDirection === 'vertical') {
+                            for (let i = cellX; i < cellX + size; i++) {
+                                let x = i;
+                                if (x > Game.N) {
+                                    x = i - size;
+                                }
+                                Game.playerBoard[x][cellY] = 1;
+                            }
+                        } else if (shipDirection === 'horizontal') {
+                            for (let j = cellY; j < cellY + size; j++) {
+                                let y = j;
+                                if (y > Game.N) {
+                                    y = j - size;
+                                }
+                                Game.playerBoard[cellX][y] = 1;
+                            }
+                        }
+                        Game.renderBoard(); // Przerysowanie planszy po umieszczeniu statku
+                        selectedShip.style.pointerEvents = 'none'; // Wyłączenie funkcji dla już postawionego statku
+                        selectedShip = null;
+
+                        if (allShipsPlaced()) {
+                            document.getElementById('playBTN').style.display = 'block';
+                        } else {
+                            document.getElementById('playBTN').style.display = 'none';
+                        }
+                    } else {
+                        msgDiv.style.display = 'block';
+                        msgDiv.innerText = "Nie można umieścić statku w tym miejscu!";
+                    }
+                }
+            }
+        }
+
+        // Funkcja sprawdzająca czy wylosowane współrzędne i obszar wokół są puste
+        function isAreaClear2(board, x, y, size, direction) {
+            const N = board.length - 2;
+            const startX = (x - 1 > 0) ? x - 1 : x;
+            const startY = (y - 1 > 0) ? y - 1 : y;
+            const endX = (direction === 'vertical') ? x + size : x + 1;
+            const endY = (direction === 'horizontal') ? y + size : y + 1;
+
+            // Sprawdza obszar od 2 komórki szerszy i dłuższy od rozmiarów statku
+            for (let i = startX; i <= endX; i++) {
+                for (let j = startY; j <= endY; j++) {
+                    if (i >= 1 && j >= 1 && i <= N && j <= N) {
+                        if (board[i][j] !== 0) {
+                            return false;
+                        }
+                    }
+                }
+            }
+            return true;
+        }
+
+        // Funkcja sprawdzająca czy wszystkie statki gracza zostały umieszczone
+        function allShipsPlaced() {
+            const ships = document.querySelectorAll('#ships > div');
+            for (let i = 0; i < ships.length; i++) {
+                const ship = ships[i];
+                if (ship.style.pointerEvents !== 'none') {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        let isBotTurn = false;
+        let playerShipCount = 20;
+        let botShipCount = 20;
+
+        // Funkcja rozpoczynająca grę po umieszczeniu statków przez gracza
+        function startGame() {
+            document.getElementById('playBTN').style.display = 'none';
+
+            const right = document.getElementById('right');
+            right.style.border = "2px solid green";
+            // Event Listener dla planszy bota do strzelania przez gracza
+            const botTable = document.getElementById('botTable');
+            botTable.addEventListener('click', playerShoot);
+            const playerTable = document.getElementById('playerTable');
+            playerTable.addEventListener('click', wrongTable);
+        }
+
+        // Funkcja do strzelania przez gracza w statki bota
+        function playerShoot(event) {
+            msgDiv.style.display = "none";
+            if (isBotTurn) {
+                msgDiv.innerText = "Trwa tura Bota!";
+                msgDiv.style.display = "block";
+            }
+            if (!isBotTurn && event.target.tagName === 'TD') {
+                const botTable = document.getElementById('botTable');
+                const cellSize = 59.55;
+                const rect = botTable.getBoundingClientRect(); // Pobranie współrzędnych planszy
+
+                // Obliczenie indeksu komórki, w którą strzela gracz
+                const cellX = Math.floor((event.clientY - rect.top) / cellSize) + 1;
+                const cellY = Math.floor((event.clientX - rect.left) / cellSize) + 1;
+
+                // Sprawdzenie czy strzał jest w granicach planszy i czy nie został już wykonany wcześniej
+                if (cellX <= Game.N && cellY <= Game.N && Game.playerShotsBoard[cellX][cellY] === 0) {
+                    Game.playerShotsBoard[cellX][cellY] = 1; // Oznaczenie miejsca strzału na planszy gracza
+                    if (Game.board[cellX][cellY] === 1) {
+                        event.target.classList.add('hitImg');
+                        botShipCount--; // Zmniejszenie liczby statków bota
+                        if (botShipCount === 0) { // Sprawdzenie wygranej gracza
+                            // Usunięcie event listenera na strzelanie
+                            const botTable = document.getElementById('botTable');
+                            botTable.removeEventListener('click', playerShoot);
+                            const playerTable = document.getElementById('playerTable');
+                            playerTable.removeEventListener('click', wrongTable);
+                            document.getElementById('restartBTN').style.display = 'block';
+                            msgDiv.innerText = "Gratulacje, wygrałeś!";
+                            msgDiv.style.display = "block";
+                            const right = document.getElementById('right');
+                            right.style.border = "2px solid #2f4f4f";
+                            isBotTurn = false;
+                        }
+                    } else {
+                        event.target.classList.add('missImg');
+                        // Tura bota
+                        const right = document.getElementById('right');
+                        right.style.border = "2px solid #2f4f4f";
+                        isBotTurn = true;
+                        botShoot();
+                    }
+                }
+            }
+        }
+
+        // Funkcja do strzelania przez bota w statki gracza - losowanie
+        function botShoot() {
+            const left = document.getElementById('left');
+            left.style.border = "2px solid red";
+            let shotX, shotY;
+            do {
+                shotX = Math.floor(Math.random() * Game.N);
+                shotY = Math.floor(Math.random() * Game.N);
+            } while (Game.botShotsBoard[shotY][shotX] !== 0);
+
+            Game.botShotsBoard[shotY][shotX] = 1; // Oznaczenie miejsca strzału na planszy bota
+            console.log("Bot strzela", shotX + 1, shotY + 1);
+
+            // "Myślenie"
+            setTimeout(() => {
+                // Sprawdzenie trafienia w statki gracza i aktualizacja odpowiedniej komórki
+                const playerBoardCell = document.getElementById('playerTable').rows[shotY].cells[shotX];
+                // Sprawdzenie trafienia
+                if (Game.playerBoard[shotY + 1][shotX + 1] === 1) {
+                    playerBoardCell.classList.add('hitImg');
+                    playerShipCount--;
+                    if (playerShipCount === 0) { // Sprawdzenie wygranej Bota
+                        // Usunięcie event listenera na strzelanie
+                        const botTable = document.getElementById('botTable');
+                        botTable.removeEventListener('click', playerShoot);
+                        const playerTable = document.getElementById('playerTable');
+                        playerTable.removeEventListener('click', wrongTable);
+                        document.getElementById('restartBTN').style.display = 'block';
+                        msgDiv.innerText = "Niestety, przegrałeś... :(";
+                        msgDiv.style.display = "block";
+                        left.style.border = "2px solid #2f4f4f";
+                        const right = document.getElementById('right');
+                        right.style.border = "2px solid #2f4f4f";
+                        displayBotShips();
+                        isBotTurn = false;
+                    } else {
+                        botShoot(); // Kolejna tura dla Bota jeśli trafił
+                    }
+                } else {
+                    playerBoardCell.classList.add('missImg');
+                    left.style.border = "2px solid #2f4f4f";
+                    const right = document.getElementById('right');
+                    right.style.border = "2px solid green";
+                    isBotTurn = false;
+                }
+            }, 1000);
+
+        }
+
+        // Alert przy klikaniu w złą planszę w trakcie gry
+        function wrongTable() {
+            msgDiv.innerText = "Na tej tabeli gra Bot!";
+            msgDiv.style.display = "block";
+        }
+
+        // Wyświetlanie okrętów Bota po przegranej Gracza
+        function displayBotShips() {
+            const botTable = document.getElementById('botTable');
+            for (let i = 0; i < Game.N; i++) {
+                for (let j = 0; j < Game.N; j++) {
+                    const cell = botTable.rows[i].cells[j];
+                    if (Game.board[i + 1][j + 1] === 1) {
+                        cell.style.backgroundColor = '#93B5B5';
+                    }
+                }
+            }
+        }
+
+        // Event Listener dla planszy gracza do umieszczania statków
+        const playerTable = document.getElementById('playerTable');
+        playerTable.addEventListener('mousemove', drawShip);
+        playerTable.addEventListener('click', placeShip);
+
+        // Restart/Inicjalizacja
+        function game() {
+            playerShipCount = 20;
+            botShipCount = 20;
+
+            let selectedShip = null;
+            let previousShip = null;
+            chooseShip(document.getElementById("czworka1").firstChild);
+            let shipDirection = 'horizontal';
+
+            const ships = document.querySelectorAll('#ships > div');
+            ships.forEach(ship => {
+                ship.style.pointerEvents = 'auto';
+                unchange(ship.firstChild);
+            });
+
+            document.getElementById('playBTN').style.display = 'none';
+            document.getElementById('restartBTN').style.display = 'none';
+            msgDiv.style.display = "none";
+            msgDiv.innerText = "";
+            Game.initializeBoard();
+            Game.generateShips();
+            Game.renderBoard();
+            console.log(Game.board); // Wyświetlenie stanu planszy Bota w konsoli - pod debug
+            displayBotShips();
+
+        };
+    </script>
+</body>
+
+</html>
