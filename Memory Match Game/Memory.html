@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="pl-PL">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Uchacz - Memory</title>
+    <style>
+        body {
+            background-color: snow;
+            text-align: center;
+        }
+
+        h1 {
+            background-color: darkslategrey;
+            color: snow;
+            width: 100%;
+            padding: 20px;
+            text-align: left;
+        }
+
+        #gra {
+            position: absolute;
+            width: 816px;
+            left: 50%;
+            margin-left: -408px;
+            border: 2px solid darkslategrey;
+            display: none;
+        }
+
+        #start {
+            position: absolute;
+            width: 816px;
+            left: 50%;
+            margin-left: -408px;
+            border: 2px solid darkslategrey;
+        }
+
+        #zegar {
+            position: absolute;
+            left: 50%;
+            margin-left: -200px;
+            top: 45px;
+            border: 2px solid snow;
+            background-color: none;
+            width: 400px;
+            height: 30px;
+            display: none;
+            color: snow;
+            font-size: 25px;
+        }
+
+        #wygrana {
+            position: absolute;
+            width: 816px;
+            height: 816px;
+            left: 50%;
+            margin-left: -408px;
+            border: 2px solid darkslategrey;
+            display: none;
+        }
+
+        #wygranaCzas1 {
+            position: absolute;
+            color: darkslategrey;
+            padding: 20px;
+            height: 60px;
+            width: 600px;
+            font-size: 40px;
+            margin-top: 240px;
+            left: 50%;
+            margin-left: -300px;
+            text-align: center;
+        }
+
+        #wygranaCzas2 {
+            position: absolute;
+            color: darkslategrey;
+            padding: 20px;
+            height: 60px;
+            width: 600px;
+            font-size: 40px;
+            margin-top: 300px;
+            left: 50%;
+            margin-left: -300px;
+            text-align: center;
+        }
+
+        #info {
+            position: absolute;
+            color: darkslategrey;
+            height: 40px;
+            width: 600px;
+            font-size: 10px;
+            margin-top: 380px;
+            left: 50%;
+            margin-left: -300px;
+            text-align: center;
+        }
+
+        #tabelaRekordow {
+            position: absolute;
+            width: 816px;
+            height: 816px;
+            left: 50%;
+            margin-left: -408px;
+            border: 2px solid darkslategrey;
+            display: none;
+        }
+
+        #tabela {
+            position: absolute;
+            left: 50%;
+            width: 800px;
+            margin-left: -450px;
+            top: 10px;
+            color: darkslategrey;
+        }
+
+        #rekord {
+            position: absolute;
+            background-color: darkslategrey;
+            width: 820px;
+            height: 80px;
+            left: 50%;
+            margin-left: -408px;
+            margin-top: 836px;
+
+        }
+
+        img {
+            width: 200px;
+            float: left;
+            border: 2px solid darkslategrey;
+        }
+
+        #imgCzolowy {
+            width: 812px;
+            float: left;
+            border: 2px solid darkslategrey;
+        }
+
+        img:nth-child(4n+1) {
+            clear: both;
+        }
+
+        button {
+            margin-top: 30px;
+            width: 200px;
+            height: 30px;
+            background-color: darkslategrey;
+            border: 2px solid snow;
+            color: snow;
+            font-size: 20px;
+
+        }
+
+        #nickInput {
+            height: 24px;
+            width: 200px;
+            border: 2px solid snow;
+            background-color: darkslategrey;
+            color: snow;
+            font-size: 20px;
+        }
+
+        #restartBtn {
+            width: 400px;
+            height: 60px;
+            font-size: 40px;
+            margin-top: 600px
+        }
+
+        button:hover {
+            color: darkslategrey;
+            background-color: snow;
+            border: 2px solid darkslategrey;
+        }
+    </style>
+    <script>
+        const zdjecia = [1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6, 7, 7, 8, 8];
+
+        let tekstH1 = "MEMORY";
+
+        let elementy;
+        let odwrocone = [];
+        let pozycjaOdwr = [];
+        let pary = [];
+
+        let czyPierwszeKlikniecie = true;
+        let czasPoczatkowy;
+        let czasKoncowy;
+        let czasGry;
+        let timerInterval;
+
+        let nick = "Nie Wprowadzony";
+        let rekordyClick = false;
+
+        let blokadaKlikniec = false;
+
+        // Funkcja przywracająca widok z wyborem trybu gry
+        function powrotCzolowej() {
+            tekstH1 = "MEMORY";
+            document.querySelector('h1').textContent = tekstH1;
+            document.getElementById('start').style.display = 'block';
+            document.getElementById('wygrana').style.display = 'none';
+            document.getElementById('rekord').style.display = 'block';
+            document.getElementById('zegar').style.display = 'none';
+        }
+
+        // Funkcja z ekranem wygranej
+        function wygrana() {
+            czyPierwszeKlikniecie = true;
+            pary = [];
+            elementy.forEach((k) => {
+                k.src = "img/0.jpg";
+            });
+            document.getElementById('wygrana').style.display = 'block';
+            document.getElementById('gra').style.display = 'none';
+        }
+
+        // Funkcja zmieniająca tło div'ovi z czasem
+        function tloDiva(roznica, czasGry) {
+            const procentWypelnienia = (roznica / czasGry) * 100;
+            const divZegar = document.getElementById('zegar');
+            divZegar.style.background = `linear-gradient(to left, darkslategrey ${100 - procentWypelnienia}%, grey 0%)`;
+        }
+
+        // Funkcja odliczająca czas do końca
+        function odliczanieCzasu(time) {
+            czasGry = time * 1000
+            czasPoczatkowy = new Date();
+            timerInterval = setInterval(() => {
+                const teraz = Date.now();
+                czasKoncowy = new Date();
+                const roznica = czasGry - (teraz - czasPoczatkowy);
+
+                if (roznica <= 0) { // Jeżeli skończy się czas
+                    clearInterval(timerInterval);
+                    if (pary.length !== zdjecia.length) {
+                        document.getElementById('zegar').textContent = 'Porażka';
+                        document.getElementById('wygranaCzas1').textContent = "Porażka";
+                        document.getElementById('wygranaCzas2').textContent = "";
+                        wygrana();
+                    }
+                } else {
+                    const minuty = Math.floor(roznica / 60000)
+                    const sekundy = Math.floor((roznica % 60000) / 1000);
+                    const tysSekundy = Math.floor((roznica % 1000));
+                    document.getElementById('zegar').textContent = `${String(minuty).padStart(2, '0')}:${String(sekundy).padStart(2, '0')}:${String(tysSekundy).padStart(3, '0')}`; // Wyświetlanie czasu w divie zgodnie z poleceniem 00:00.000
+                    tloDiva(roznica, czasGry);
+                }
+            }, 1);
+        }
+
+        // Funkcja rozpoczynająca grę
+        function rozpocznij(time) {
+            document.getElementById('start').style.display = 'none';
+            document.getElementById('gra').style.display = 'block';
+            document.getElementById('rekord').style.display = 'none';
+
+            if (time === 30) {
+                tekstH1 += " 30[s]";
+            } else if (time === 60) {
+                tekstH1 += " 60[s]";
+            } else if (time === 90) {
+                tekstH1 += " 90[s]";
+            }
+            document.querySelector('h1').textContent = tekstH1;
+
+
+            // Mieszanie zawartości array'a z id zdjęć
+            for (let i = zdjecia.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [zdjecia[i], zdjecia[j]] = [zdjecia[j], zdjecia[i]];
+            }
+
+            elementy = document.querySelectorAll(".imggry");
+            backUpElementy = elementy;
+
+            // Odkrywanie zdjęć
+            elementy.forEach((k) => {
+                k.onclick = function () {
+                    if (!blokadaKlikniec && odwrocone.length < 2) {
+                        if (czyPierwszeKlikniecie) {
+                            document.getElementById('zegar').style.display = 'block';
+                            odliczanieCzasu(time);
+                            czyPierwszeKlikniecie = false;
+                        }
+                        const index = parseInt(k.getAttribute('data-index'));
+                        if (!pary.includes(zdjecia[index])) {
+                            k.src = "img/" + zdjecia[index] + ".jpg";
+                            odwrocone.push(zdjecia[index]);
+                            pozycjaOdwr.push(index);
+
+                            if (odwrocone.length === 2) {
+                                odwroconeSprawdz(time);
+                            }
+                        }
+                    }
+                };
+            });
+        }
+
+        // Funkcja sprawdzająca, czy znaleziono parę
+        function odwroconeSprawdz(time) {
+            if (!blokadaKlikniec) {
+                blokadaKlikniec = true;
+                if (zdjecia[pozycjaOdwr[0]] === zdjecia[pozycjaOdwr[1]] &&
+                    pozycjaOdwr[0] !== pozycjaOdwr[1]) {
+                    pary.push(odwrocone[0]);
+                    pary.push(odwrocone[1]);
+                    odwrocone = [];
+                    pozycjaOdwr = [];
+
+                    // Sprawdza czy wszystkie pary zostały znalezione
+                    if (pary.length === zdjecia.length) {
+                        clearInterval(timerInterval);
+                        let wynikCzas = czasKoncowy.getTime() - czasPoczatkowy.getTime();
+
+                        const minuty = Math.floor(wynikCzas / 60000)
+                        const sekundy = Math.floor((wynikCzas % 60000) / 1000);
+                        const tysSekundy = Math.floor((wynikCzas % 1000));
+
+                        wynikCzas = `${String(minuty).padStart(2, '0')}:${String(sekundy).padStart(2, '0')}:${String(tysSekundy).padStart(3, '0')}`;
+
+                        document.getElementById('wygranaCzas1').textContent = "Wynik czasowy [s]:";
+                        document.getElementById('wygranaCzas2').textContent = wynikCzas;
+
+                        zapisywanieRekordow(time, nick, wynikCzas,);
+                        wygrana();
+                    }
+                } else {
+                    // Jeśli nie znaleziono pary to przywraca początkowy obrazek
+                    setTimeout(() => {
+                        elementy[pozycjaOdwr[0]].src = "img/0.jpg";
+                        elementy[pozycjaOdwr[1]].src = "img/0.jpg";
+                        odwrocone = [];
+                        pozycjaOdwr = [];
+                    }, 600);
+                }
+                blokadaKlikniec = false;
+            }
+        }
+
+        // Funkcja do wporwadzania nicków
+        function wprowadzNick() {
+            nick = document.getElementById("nickInput").value;
+            if (nick === null) {
+                nick = "Nie Wprowadzony";
+            }
+        }
+
+        // Funkcja do pobrania ciasteczka po jego nazwie
+        function getCookie(name) {
+            const value = `; ${document.cookie}`;
+            const parts = value.split(`; ${name}=`);
+            if (parts.length === 2) return parts.pop().split(';').shift();
+        }
+
+        // Funkcja do zapisywania rekordów w ciastkach
+        function zapisywanieRekordow(tryb, nick, czas) {
+            let rekordy = [];
+
+            // Sprawda czy istnieje juz ciasteczko z rekordami, jezeli tak to dodaje tamte rekordy do tablicy
+            if (document.cookie.includes('rekordyMemory')) {
+                rekordy = JSON.parse(getCookie('rekordyMemory'));
+            }
+
+            // Tworzy listę z rekordami dla danego trybu
+            if (!rekordy[tryb]) {
+                rekordy[tryb] = [];
+            }
+            rekordy[tryb].push({ nick: nick, czas: czas });
+
+            rekordy[tryb].sort((a, b) => {
+                return parseFloat(a.czas.replace(':', '')) - parseFloat(b.czas.replace(':', ''));
+            });
+
+            if (rekordy[tryb].length > 10) {
+                rekordy[tryb] = rekordy[tryb].slice(0, 10);
+            }
+
+            // Zapisuje rekordy w ciasteczku
+            document.cookie = `rekordyMemory=${JSON.stringify(rekordy)}; expires=Fri, 31 Dec 2100 23:59:59 GMT`; // Daleka data wygaśnięcia ciastka
+        }
+
+        // Funkcja wyświetlająca rekordy
+        function wyswietlRekordy() {
+            const czyCiastko = getCookie('rekordyMemory');
+
+            if (czyCiastko) {
+                try {
+                    // Pobieranie rekordów z ciasteczka
+                    const rekordy = JSON.parse(getCookie('rekordyMemory'));
+
+                    if (rekordy) {
+                        const tabelaRekordow = document.getElementById('tabela');
+                        tabelaRekordow.innerHTML = '';
+
+                        for (let tryb in rekordy) {
+                            const rekordyTrybu = rekordy[tryb];
+                            if (rekordyTrybu && rekordyTrybu.length > 0) {
+                                const tabelaTrybu = document.createElement('tbody');
+                                tabelaTrybu.innerHTML = `
+                        <tr>
+                            <th colspan="2">Tryb: ${tryb} sekund</th>
+                        </tr>
+                        <tr>
+                            <th>Nick</th>
+                            <th>Czas</th>
+                        </tr>
+                    `;
+                                // Dla 10 najlepszych rekordów w danym trybie tworzy wiersz z 2 kolumnami
+                                rekordyTrybu.forEach(rekord => {
+                                    if (rekord && rekord.nick && rekord.czas) {
+                                        tabelaTrybu.innerHTML += `
+                                <tr>
+                                    <td>${rekord.nick}</td>
+                                    <td>${rekord.czas}</td>
+                                </tr>
+                            `;
+                                    }
+                                });
+
+                                tabelaRekordow.appendChild(tabelaTrybu);
+                            }
+                        }
+
+                        if (rekordyClick === false) {
+                            document.getElementById('rekordyBtn').textContent = "Powrót";
+                            document.getElementById('start').style.display = 'none';
+                            document.getElementById('tabelaRekordow').style.display = 'block';
+                            rekordyClick = true;
+                        } else {
+                            document.getElementById('rekordyBtn').textContent = "Rekordy";
+                            document.getElementById('start').style.display = 'block';
+                            document.getElementById('tabelaRekordow').style.display = 'none';
+                            rekordyClick = false;
+                        }
+                    }
+                }
+                catch (error) {
+                    console.error('Błąd parsowania danych z ciasteczka:', error);
+                }
+            } else {
+                console.log('Brak ciasteczka lub jego wartość jest pusta.');
+            }
+        }
+    </script>
+</head>
+
+<body>
+    <h1>MEMORY</h1>
+
+    <div id="zegar"></div>
+
+    <div id="start">
+        <img src="img/czolowa.jpg" draggable="false" usemap="#image-map" id="imgCzolowy" alt="Grafika Czołowa">
+
+        <map name="image-map">
+            <area onclick="rozpocznij(90)" coords="147,509,146,719,621,610" shape="poly">
+            <area onclick="rozpocznij(60)" coords="682,298,188,409,680,525" shape="poly">
+            <area onclick="rozpocznij(30)" coords="131,91,127,317,621,205" shape="poly">
+        </map>
+    </div>
+
+    <div id="gra">
+        <img src="img/0.jpg" alt="Karta 0" class="imggry" draggable="false" data-index="0">
+        <img src="img/0.jpg" alt="Karta 1" class="imggry" draggable="false" data-index="1">
+        <img src="img/0.jpg" alt="Karta 2" class="imggry" draggable="false" data-index="2">
+        <img src="img/0.jpg" alt="Karta 3" class="imggry" draggable="false" data-index="3">
+        <img src="img/0.jpg" alt="Karta 4" class="imggry" draggable="false" data-index="4">
+        <img src="img/0.jpg" alt="Karta 5" class="imggry" draggable="false" data-index="5">
+        <img src="img/0.jpg" alt="Karta 6" class="imggry" draggable="false" data-index="6">
+        <img src="img/0.jpg" alt="Karta 7" class="imggry" draggable="false" data-index="7">
+        <img src="img/0.jpg" alt="Karta 8" class="imggry" draggable="false" data-index="8">
+        <img src="img/0.jpg" alt="Karta 9" class="imggry" draggable="false" data-index="9">
+        <img src="img/0.jpg" alt="Karta 10" class="imggry" draggable="false" data-index="10">
+        <img src="img/0.jpg" alt="Karta 11" class="imggry" draggable="false" data-index="11">
+        <img src="img/0.jpg" alt="Karta 12" class="imggry" draggable="false" data-index="12">
+        <img src="img/0.jpg" alt="Karta 13" class="imggry" draggable="false" data-index="13">
+        <img src="img/0.jpg" alt="Karta 14" class="imggry" draggable="false" data-index="14">
+        <img src="img/0.jpg" alt="Karta 15" class="imggry" draggable="false" data-index="15">
+    </div>
+
+    <div id="wygrana">
+        <h2 id="wygranaCzas1"></h2>
+        <h2 id="wygranaCzas2"></h2>
+        <button id="restartBtn" onclick="powrotCzolowej()">Restart</button>
+    </div>
+
+    <div id="tabelaRekordow">
+        <table id="tabela"></table>
+    </div>
+
+    <div id="rekord">
+        <button id="rekordyBtn" onclick="wyswietlRekordy()">Rekordy</button>
+        <input id="nickInput" type="text">
+        <button id="nickBtn" onclick="wprowadzNick()">Wprowadź nick</button>
+    </div>
+</body>
+
+</html>
