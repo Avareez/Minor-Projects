@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="pl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gra Kulki</title>
+    <style>
+        .game-container {
+            display: grid;
+            grid-template-columns: repeat(9, 50px);
+            gap: 2px;
+            margin: 20px auto;
+            width: fit-content;
+        }
+
+        .cell {
+            width: 50px;
+            height: 50px;
+            background-color: #f0f0f0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border: 1px solid #333;
+        }
+
+        .ball {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+        }
+
+        .selected {
+            border: 3px solid black;
+        }
+
+        .info {
+            text-align: center;
+            margin: 20px;
+        }
+
+        .highlight {
+            background-color: rgba(0, 255, 0, 0.3);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="info">
+        <h1>Gra Kulki</h1>
+        <p>Punkty: <span id="points">0</span></p>
+        <p>Następne kulki: <span id="nextBalls"></span></p>
+    </div>
+    <div class="game-container" id="gameBoard"></div>
+
+    <script>
+        const colors = ["#FF0000", "#00FF00", "#0000FF", "#FFFF00", "#FF00FF", "#00FFFF", "orange"];
+        const rows = 9, cols = 9;
+        let board = Array.from({ length: rows }, () => Array(cols).fill(null));
+        let selectedBall = null;
+        let nextBalls = [];
+        let points = 0;
+        let highlightedPath = [];
+        let isMoving = false;
+
+        function handleCellMouseEnter(r, c) {
+            if (selectedBall && !isMoving) {
+                const path = findPath(selectedBall, { r, c });
+                if (path) {
+                    highlightPath(path);
+                }
+            }
+        }
+
+        function handleCellMouseLeave() {
+            if (highlightedPath.length > 0) {
+                clearHighlightedPath();
+            }
+        }
+
+        function highlightPath(path) {
+            clearHighlightedPath();
+            highlightedPath = path;
+            path.forEach(({ r, c }) => {
+                const cell = document.querySelector(`.cell:nth-child(${r * cols + c + 1})`);
+                if (cell) cell.classList.add('highlight');
+            });
+        }
+
+        function clearHighlightedPath() {
+            highlightedPath.forEach(({ r, c }) => {
+                const cell = document.querySelector(`.cell:nth-child(${r * cols + c + 1})`);
+                if (cell) cell.classList.remove('highlight');
+            });
+            highlightedPath = [];
+        }
+
+        function handleCellClick(r, c) {
+            if (isMoving) return;
+
+            if (board[r][c] && isSurrounded(r, c)) {
+                console.log("Ta kulka jest obudowana i nie można jej przesunąć.");
+                return;
+            }
+
+            if (selectedBall) {
+                if (!board[r][c] && findPath(selectedBall, { r, c })) {
+                    const path = findPath(selectedBall, { r, c });
+                    moveBallAlongPath(selectedBall, path);
+                    selectedBall = null;
+                } else if (board[r][c]) {
+                    selectedBall = { r, c };
+                } else {
+                    selectedBall = null;
+                }
+                clearHighlightedPath();
+            } else if (board[r][c]) {
+                selectedBall = { r, c };
+            }
+            drawBoard();
+        }
+
+        function moveBallAlongPath(from, path) {
+            isMoving = true;
+            let i = 0;
+
+            function step() {
+                if (i < path.length) {
+                    const { r, c } = path[i];
+                    board[path[i].r][path[i].c] = board[from.r][from.c];
+                    board[from.r][from.c] = null;
+                    from = path[i];
+                    i++;
+                    drawBoard();
+                    setTimeout(step, 100);
+                } else {
+                    isMoving = false;
+                    if (checkLines(from)) {
+                        document.getElementById('points').textContent = points;
+                    } else {
+                        addRandomBalls(3);
+                        if (isBoardFull()) alert("Koniec gry! Twój wynik to: " + points);
+                    }
+                }
+            }
+            step();
+        }
+
+        function findPath(from, to) {
+            const directions = [[-1, 0], [1, 0], [0, -1], [0, 1]];
+            let queue = [[from.r, from.c, []]];
+            let visited = Array.from({ length: rows }, () => Array(cols).fill(false));
+            visited[from.r][from.c] = true;
+
+            while (queue.length > 0) {
+                let [r, c, path] = queue.shift();
+                if (r === to.r && c === to.c) return path.concat({ r, c });
+
+                for (let [dr, dc] of directions) {
+                    const nr = r + dr, nc = c + dc;
+                    if (nr >= 0 && nr < rows && nc >= 0 && nc < cols && !visited[nr][nc] && !board[nr][nc]) {
+                        visited[nr][nc] = true;
+                        queue.push([nr, nc, path.concat({ r, c })]);
+                    }
+                }
+            }
+            return null;
+        }
+
+        function drawBoard() {
+            const gameBoard = document.getElementById('gameBoard');
+            gameBoard.innerHTML = '';
+            for (let r = 0; r < rows; r++) {
+                for (let c = 0; c < cols; c++) {
+                    const cell = document.createElement('div');
+                    cell.classList.add('cell');
+
+                    if (board[r][c]) {
+                        const ball = document.createElement('div');
+                        ball.classList.add('ball');
+                        ball.style.backgroundColor = board[r][c];
+                        if (selectedBall && selectedBall.r === r && selectedBall.c === c) {
+                            ball.classList.add('selected');
+                        }
+                        cell.appendChild(ball);
+                    }
+
+                    cell.addEventListener('click', () => handleCellClick(r, c));
+                    cell.addEventListener('mouseenter', () => handleCellMouseEnter(r, c));
+                    cell.addEventListener('mouseleave', handleCellMouseLeave);
+                    gameBoard.appendChild(cell);
+                }
+            }
+        }
+
+        function isSurrounded(r, c) {
+            const directions = [
+                [-1, 0], [1, 0], [0, -1], [0, 1]
+            ];
+            return directions.every(([dr, dc]) => {
+                const nr = r + dr, nc = c + dc;
+                return nr < 0 || nr >= rows || nc < 0 || nc >= cols || board[nr][nc];
+            });
+        }
+
+        function getRandomColor() {
+            return colors[Math.floor(Math.random() * colors.length)];
+        }
+
+        function addRandomBalls(count) {
+            let emptyCells = [];
+            for (let r = 0; r < rows; r++) {
+                for (let c = 0; c < cols; c++) if (!board[r][c]) emptyCells.push([r, c]);
+            }
+            for (let i = 0; i < count; i++) {
+                if (emptyCells.length === 0) return;
+                const [r, c] = emptyCells.splice(Math.floor(Math.random() * emptyCells.length), 1)[0];
+                board[r][c] = nextBalls[i] || getRandomColor();
+            }
+            generateNextBalls();
+            drawBoard();
+        }
+
+        function generateNextBalls() {
+            nextBalls = [getRandomColor(), getRandomColor(), getRandomColor()];
+            document.getElementById('nextBalls').innerHTML = nextBalls.map(color => `<span style="color:${color};">&#9679;</span>`).join(' ');
+        }
+
+        function checkLines({ r, c }) {
+            let color = board[r][c];
+            const directions = [
+                [[0, 1], [0, -1]],
+                [[1, 0], [-1, 0]],
+                [[1, 1], [-1, -1]],
+                [[1, -1], [-1, 1]]
+            ];
+            let removed = 0;
+
+            for (let dir of directions) {
+                let line = [{ r, c }];
+                for (let [dr, dc] of dir) {
+                    let nr = r + dr, nc = c + dc;
+                    while (nr >= 0 && nr < rows && nc >= 0 && nc < cols && board[nr][nc] === color) {
+                        line.push({ r: nr, c: nc });
+                        nr += dr;
+                        nc += dc;
+                    }
+                }
+                if (line.length >= 5) {
+                    for (let pos of line) {
+                        board[pos.r][pos.c] = null;
+                    }
+                    removed += line.length;
+                }
+            }
+            points += removed;
+            return removed > 0;
+        }
+
+        function isBoardFull() {
+            return board.every(row => row.every(cell => cell));
+        }
+
+        generateNextBalls();
+        addRandomBalls(3);
+        drawBoard();
+    </script>
+</body>
+
+</html>
