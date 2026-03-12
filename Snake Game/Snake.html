@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="pl-PL">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Uchacz - Snake</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: snow;
+        }
+
+        h1 {
+            position: absolute;
+            left: 0;
+            top: 0;
+            background-color: darkslategrey;
+            color: snow;
+            width: 100%;
+            padding: 20px;
+            text-align: left;
+        }
+
+        #refreshBtn {
+            display: none;
+            position: absolute;
+            left: 50%;
+            margin-left: -100px;
+            top: 512px;
+        }
+
+        button {
+            width: 200px;
+            height: 50px;
+            background-color: darkslategrey;
+            border: 2px solid snow;
+            color: snow;
+            font-size: 20px;
+            float: left;
+
+        }
+
+        button:hover {
+            color: darkslategrey;
+            background-color: snow;
+            border: 2px solid #2f4f4f;
+            float: left;
+        }
+
+        .sHead {
+            /*Głowa domyślnie skierowana w prawo*/
+            width: 50px;
+            height: 50px;
+            background-image: url('https://rembound.com/files/creating-a-snake-game-tutorial-with-html5/snake-graphics.png');
+            background-size: 250px;
+            background-position: -200px 0px;
+        }
+
+        .sBody {
+            /*Ciało domyślnie skierowane poziomo*/
+            width: 50px;
+            height: 50px;
+            background-image: url('https://rembound.com/files/creating-a-snake-game-tutorial-with-html5/snake-graphics.png');
+            background-size: 250px;
+            background-position: -50px 0px;
+        }
+
+        .sTail {
+            /*Ogon domyślnie skierowany w prawo*/
+            width: 50px;
+            height: 50px;
+            background-image: url('https://rembound.com/files/creating-a-snake-game-tutorial-with-html5/snake-graphics.png');
+            background-size: 250px;
+            background-position: -200px -100px;
+        }
+
+        .sCurve {
+            /*Skręt domyślnie skierowany z góry w prawo*/
+            width: 50px;
+            height: 50px;
+            background-image: url('https://rembound.com/files/creating-a-snake-game-tutorial-with-html5/snake-graphics.png');
+            background-size: 250px;
+            background-position: 0px -50px;
+        }
+
+        .apple {
+            width: 50px;
+            height: 50px;
+            background-image: url('https://rembound.com/files/creating-a-snake-game-tutorial-with-html5/snake-graphics.png');
+            background-size: 250px;
+            background-position: 0px -150px;
+        }
+
+        .box {
+            width: 50px;
+            height: 50px;
+            float: left;
+        }
+
+        #gameBoard {
+            border: #2f4f4f 2px solid;
+            width: 854px;
+            position: absolute;
+            top: 110px;
+            left: 50%;
+            margin-left: -427px;
+        }
+
+        .jeden {
+            background-color: #2f4f4f;
+        }
+
+        .dwa:nth-child(2n) {
+            background-color: rgb(221, 237, 221);
+        }
+
+        .dwa:nth-child(2n-1) {
+            background-color: #ffffff;
+        }
+
+        .snake {
+            width: 50px;
+            height: 50px;
+        }
+    </style>
+    <script>
+        // Funkcja zapobiegająca scrollowanie strzałkami
+        function preventArrowScroll(event) {
+            if (event.keyCode === 38 || event.keyCode === 40) {
+                event.preventDefault();
+            }
+        }
+
+        // Wywołanie odświeżenia strony po kliknięciu na przycisk
+        function refreshPage() {
+            location.reload();
+        }
+
+        // Przy każdym keydownie włącza funckje antyscrollową dla strzałek
+        document.addEventListener('keydown', preventArrowScroll);
+
+        let gameStarted = false;
+
+        let snake = {
+            direction: 'right',
+            body: [
+                { x: 6, y: 8 }, // Początkowe pozycje węża
+                { x: 5, y: 8 },
+                { x: 4, y: 8 }
+            ],
+            // FUnkcja generująca węża
+            renderSnake() {
+                // Czyszczenie starego węża
+                const boxes = document.querySelectorAll('.box');
+                boxes.forEach(box => {
+                    if (box.classList.contains('snake')) {
+                        box.classList.remove('snake', 'sHead', 'sBody', 'sTail');
+                    }
+                });
+
+                // Robienie nowego
+                this.body.forEach((segment, index) => {
+                    const box = document.querySelector(`.box[data-x="${segment.x}"][data-y="${segment.y}"]`);
+                    if (box) {
+                        if (index === 0) {
+                            box.classList.add('sHead');
+                            this.setHeadRotation(box); // Dodaj obrót dla głowy węża
+                        } else if (index === this.body.length - 1) {
+                            box.classList.add('sTail');
+                        } else {
+                            box.classList.add('sBody');
+                        }
+                        box.classList.add('snake');
+                    }
+                });
+            },
+            // Funkcja ustawiająca kierunek obrotu segmentó węża
+            setHeadRotation(box) {
+                let rotation = 'rotate(0deg)'; // Domyślnie nie obraca - elementy skierowane są w prawo
+                switch (snake.direction) {
+                    case 'up':
+                        rotation = 'rotate(-90deg)';
+                        break;
+                    case 'down':
+                        rotation = 'rotate(90deg)';
+                        break;
+                    case 'left':
+                        rotation = 'rotate(180deg)';
+                        break;
+                }
+                box.style.transform = rotation;
+            },
+            // Funkcja przemieszczająca węża
+            move() {
+                let newHead = { ...this.body[0] };
+
+                // Ustalanie nowej pozycji głowy węża w zależności od kierunku
+                switch (this.direction) {
+                    case 'up':
+                        newHead.y -= 1;
+                        break;
+                    case 'down':
+                        newHead.y += 1;
+                        break;
+                    case 'left':
+                        newHead.x -= 1;
+                        break;
+                    case 'right':
+                        newHead.x += 1;
+                        break;
+                }
+
+                // Sprawdzenie, czy wąż zjadł jabłko
+                this.eatApple();
+
+                // Sprawdzenie kolizji z brzegami planszy i ciałem własnym
+                if (game.checkCollision(newHead) || this.checkSelfCollision(newHead)) {
+                    clearInterval(snakeLoop);
+                    document.getElementById('refreshBtn').style.display = 'block';
+                    return;
+                }
+
+                // Dodawanie nowej głowy na początek ciała węża
+                this.body.unshift(newHead);
+
+                // Usunięcie ostatniego segmentu węża
+                this.body.pop();
+            },
+            // Funkcja sprawdzająca czy wąż nie uderzył sam w siebie - czy nowa pozycja głowy węża pokrywa się z jakimkolwiek segmentem jego ciała
+            checkSelfCollision(newHead) {
+                return this.body.slice(1).some(segment => segment.x === newHead.x && segment.y === newHead.y);
+            },
+            // Funkcja zapobiegająca zawracanie węża o 180st
+            changeDirection(newDirection) {
+                if (
+                    (this.direction === 'up' && newDirection === 'down') ||
+                    (this.direction === 'down' && newDirection === 'up') ||
+                    (this.direction === 'left' && newDirection === 'right') ||
+                    (this.direction === 'right' && newDirection === 'left')
+                ) {
+                    return;
+                }
+
+                this.direction = newDirection;
+            },
+            // Funckja konsumująca jabluszko
+            eatApple() {
+                const head = this.body[0];
+                const apple = document.querySelector(`.apple[data-x="${head.x}"][data-y="${head.y}"]`);
+
+                if (apple) {
+                    apple.classList.remove('apple');
+                    this.grow();
+                    game.placeApple();
+                }
+            },
+            // Funkcja zwiększająca rozmiar węża
+            grow() {
+                const newTail = { ...this.body[this.body.length - 1] };
+                this.body.push(newTail);
+            },
+        };
+
+        // Funkcja do poruszania wężem
+        function kd(event) {
+            if (!gameStarted && event.key.startsWith('Arrow')) {
+                gameStarted = true;
+
+                snakeLoop = setInterval(() => {
+                    snake.move();
+                    snake.renderSnake();
+                }, 200);
+            }
+
+            // WYznacza kierunek
+            switch (event.key) {
+                case 'ArrowUp':
+                    snake.changeDirection('up');
+                    break;
+                case 'ArrowDown':
+                    snake.changeDirection('down');
+                    break;
+                case 'ArrowLeft':
+                    snake.changeDirection('left');
+                    break;
+                case 'ArrowRight':
+                    snake.changeDirection('right');
+                    break;
+            }
+        }
+
+        let game = {
+            width: 17,
+            height: 17,
+            arr: [],
+            // Funkcja renderująca planszę gry
+            render(gameBoard) {
+                gameBoard.innerHTML = '';
+
+                for (let i = 0; i < this.height; i++) {
+                    for (let j = 0; j < this.width; j++) {
+                        const div = document.createElement("div");
+                        div.classList.add("box");
+                        div.classList.add(i === 0 || j === 0 || j === this.width - 1 || i === this.height - 1 ? 'jeden' : 'dwa');
+                        div.setAttribute('data-x', j);
+                        div.setAttribute('data-y', i);
+                        gameBoard.append(div);
+                    }
+                }
+                snake.renderSnake();
+            },
+            // Funkcja sprawdzająca czy wąż w coś nie uderzył
+            checkCollision(newHead) {
+                return (
+                    newHead.x === 0 || // Kolizja z lewą krawędzią
+                    newHead.x === this.width - 1 || // Kolizja z prawą krawędzią
+                    newHead.y === 0 || // Kolizja z górną krawędzią
+                    newHead.y === this.height - 1 // Kolizja z dolną krawędzią
+                );
+            },
+            // Funkcja rozmieszczająca jabłko na losowych koordynatach
+            placeApple() {
+                let appleX, appleY;
+
+                // Losowanie współrzędnych jabłka na planszy, z wykluczeniem krawędzi
+                do {
+                    appleX = Math.floor(Math.random() * (this.width - 2)) + 1;
+                    appleY = Math.floor(Math.random() * (this.height - 2)) + 1;
+                } while (snake.body.some(segment => segment.x === appleX && segment.y === appleY));
+
+                const div = document.createElement("div");
+                div.classList.add("apple");
+                div.setAttribute('data-x', appleX);
+                div.setAttribute('data-y', appleY);
+                const applePos = document.querySelector(`.box[data-x="${appleX}"][data-y="${appleY}"]`);
+                div.style.transform = 'rotate(0deg)';
+                applePos.style.transform = 'rotate(0deg)';
+                applePos.appendChild(div);
+            }
+        };
+
+        // Początkowe rozstawienie planszy gry
+        function PlayField() {
+            const gameBoard = document.getElementById("gameBoard");
+            game.render(gameBoard);
+
+            // Rozstawienie pierwszego jabłka na stałych współrzędnych x=10, y=8
+            const appleDiv = document.createElement("div");
+            appleDiv.classList.add("apple");
+            appleDiv.setAttribute('data-x', 10);
+            appleDiv.setAttribute('data-y', 8);
+            const applePos = document.querySelector(`.box[data-x="10"][data-y="8"]`);
+            applePos.appendChild(appleDiv);
+        }
+    </script>
+</head>
+
+<body onload="PlayField()" onkeydown="kd(event)">
+    <h1>Snake</h1>
+    <!-- https://rembound.com/files/creating-a-snake-game-tutorial-with-html5/snake-graphics.png -->
+    <div id="gameBoard">
+    </div>
+    <button id="refreshBtn" onclick="refreshPage()">Restart</button>
+</body>
+
+</html>
