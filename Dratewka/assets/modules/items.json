@@ -1,0 +1,198 @@
+[
+    {
+        "id": "10",
+        "name": "a KEY",
+        "flag": "1",
+        "codename": "KEY",
+        "location": "23"
+    },
+    {
+        "id": "11",
+        "name": "an AXE",
+        "flag": "1",
+        "codename": "AXE",
+        "location": "00"
+    },
+    {
+        "id": "12",
+        "name": "STICKS",
+        "flag": "1",
+        "codename": "STICKS",
+        "location": "00"
+    },
+    {
+        "id": "13",
+        "name": "SHEEPLEGS",
+        "flag": "0",
+        "codename": "SHEEPLEGS",
+        "location": "00"
+    },
+    {
+        "id": "14",
+        "name": "MUSHROOMS",
+        "flag": "1",
+        "codename": "MUSHROOMS",
+        "location": "17"
+    },
+    {
+        "id": "15",
+        "name": "MONEY",
+        "flag": "1",
+        "codename": "MONEY",
+        "location": "00"
+    },
+    {
+        "id": "16",
+        "name": "a BARREL",
+        "flag": "1",
+        "codename": "BARREL",
+        "location": "00"
+    },
+    {
+        "id": "17",
+        "name": "a SHEEPTRUNK",
+        "flag": "0",
+        "codename": "SHEEPTRUNK",
+        "location": "00"
+    },
+    {
+        "id": "18",
+        "name": "BERRIES",
+        "flag": "1",
+        "codename": "BERRIES",
+        "location": "27"
+    },
+    {
+        "id": "19",
+        "name": "WOOL",
+        "flag": "1",
+        "codename": "WOOL",
+        "location": "00"
+    },
+    {
+        "id": "20",
+        "name": "a SHEEPSKIN",
+        "flag": "0",
+        "codename": "SHEEPSKIN",
+        "location": "00"
+    },
+    {
+        "id": "21",
+        "name": "a BAG",
+        "flag": "1",
+        "codename": "BAG",
+        "location": "44"
+    },
+    {
+        "id": "22",
+        "name": "a RAG",
+        "flag": "1",
+        "codename": "RAG",
+        "location": "00"
+    },
+    {
+        "id": "23",
+        "name": "a SHEEPHEAD",
+        "flag": "0",
+        "codename": "SHEEPHEAD",
+        "location": "00"
+    },
+    {
+        "id": "24",
+        "name": "a SPADE",
+        "flag": "1",
+        "codename": "SPADE",
+        "location": "64"
+    },
+    {
+        "id": "25",
+        "name": "SULPHUR",
+        "flag": "1",
+        "codename": "SULPHUR",
+        "location": "00"
+    },
+    {
+        "id": "26",
+        "name": "a SOLID POISON",
+        "flag": "0",
+        "codename": "SOLID POISON",
+        "location": "00"
+    },
+    {
+        "id": "27",
+        "name": "a BUCKET",
+        "flag": "1",
+        "codename": "BUCKET",
+        "location": "15"
+    },
+    {
+        "id": "28",
+        "name": "TAR",
+        "flag": "1",
+        "codename": "TAR",
+        "location": "00"
+    },
+    {
+        "id": "29",
+        "name": "a LIQUID POISON",
+        "flag": "0",
+        "codename": "LIQUID POISON",
+        "location": "00"
+    },
+    {
+        "id": "30",
+        "name": "a DEAD DRAGON",
+        "flag": "0",
+        "codename": "DEAD DRAGON",
+        "location": "00"
+    },
+    {
+        "id": "31",
+        "name": "a STONE",
+        "flag": "1",
+        "codename": "STONE",
+        "location": "13"
+    },
+    {
+        "id": "32",
+        "name": "a FISH",
+        "flag": "1",
+        "codename": "FISH",
+        "location": "32"
+    },
+    {
+        "id": "33",
+        "name": "a KNIFE",
+        "flag": "1",
+        "codename": "KNIFE",
+        "location": "55"
+    },
+    {
+        "id": "34",
+        "name": "a DRAGONSKIN",
+        "flag": "1",
+        "codename": "DRAGONSKIN",
+        "location": "00"
+    },
+    {
+        "id": "35",
+        "name": "a dragonskin SHOES",
+        "flag": "1",
+        "codename": "SHOES",
+        "location": "00"
+    },
+    {
+        "id": "36",
+        "name": "a PRIZE",
+        "flag": "1",
+        "codename": "PRIZE",
+        "location": "00"
+    },
+    {
+        "id": "37",
+        "name": "a SHEEP",
+        "flag": "1",
+        "codename": "SHEEP",
+        "location": "00"
+    }
+]

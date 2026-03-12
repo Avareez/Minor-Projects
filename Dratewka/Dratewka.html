@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="pl-PL">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Uchacz Adrian - Dratewka</title>
+    <link rel="stylesheet" href="./assets/modules/styles.css">
+</head>
+
+<body>
+    <h1 id="header">Dratewka the Shoemaker</h1>
+    <div id="start">
+        <audio src="./assets/sound/hejnal.mp3" id="hejnal"></audio>
+        <img src="./assets/img/czolowka.jpg" id="start1" alt="Sekwencja Startowa 2" class="fullscreen">
+        <img src="./assets/img/opis_A.jpg" id="start2" alt="Sekwencja Startowa 3" class="fullscreen">
+        <img src="./assets/img/opis_B.jpg" id="start3" alt="Sekwencja Startowa" class="fullscreen">
+    </div>
+    <div id="gameboard">
+        <div id="vocab" class="mar">
+            <p>NORTH or N, SOUTH or S</p>
+            <p>WEST or W, EAST or E</p>
+            <p>TAKE (object) or T (object)</p>
+            <p>DROP (object) or D (object)</p>
+            <p>USE (object) or U (object)</p>
+            <p>- insert (object) as name written in caps</p>
+            <p>- you cant store items in trap location</p>
+            <p>GOSSIPS or G, VOCABULARY or V</p>
+            <p class="martop">Press any key to continue...</p>
+        </div>
+        <div id="gossips" class="mar">
+            <p>The woodcutter lost his home key...</p>
+            <p>The butcher likes fruit... The cooper</p>
+            <p>is greedy... Dratewka plans to make a</p>
+            <p>poisoned bait for the dragon... The</p>
+            <p>tavern owner is buying food from the</p>
+            <p>pickers... Making a rag from a bag...</p>
+            <p class="martop2">Press any key to continue...</p>
+        </div>
+        <div id="game">
+            <div class="mar" id="name">You are in a frontyard of your house</div>
+            <img class="mar" src="./assets/img/47.gif" alt="location" id="location">
+            <img src="./assets/img/kompas.bmp" alt="compass" id="compass">
+            <div class="mar"> You can go <span id="direction"> </span></div>
+            <div class="mar"> You see <span id="ground"></span></div>
+            <div class="mar"> You are carrying <span id="hand"></span></div>
+            <div class="mar" id="msgDiv"></div>
+            <div class="mar" id="movementDiv">
+                <label for="movement">What now?</label>
+                <input type="text" id="movement" autocapitalize="" value="">
+            </div>
+            <div id="N"></div>
+            <div id="E"></div>
+            <div id="S"></div>
+            <div id="W"></div>
+        </div>
+    </div>
+    <script defer type="module">
+        import { game } from './assets/modules/objects.js';
+        game.init();
+    </script>
+</body>
+
+</html>

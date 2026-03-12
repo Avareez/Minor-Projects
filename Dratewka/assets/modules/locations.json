@@ -1,0 +1,400 @@
+[
+    {
+        "XY": "11",
+        "name": "You are inside a brimstone mine",
+        "img": "./assets/img/11.gif",
+        "color": "rgb(235,211,64)",
+        "dir": [
+            "E"
+        ],
+        "items": []
+    },
+    {
+        "XY": "12",
+        "name": "You are at the entrance to the mine",
+        "img": "./assets/img/12.gif",
+        "color": "rgb(89,93,87)",
+        "dir": [
+            "E",
+            "W"
+        ],
+        "items": []
+    },
+    {
+        "XY": "13",
+        "name": "A hill",
+        "img": "./assets/img/13.gif",
+        "color": "rgb(117,237,243)",
+        "dir": [
+            "E",
+            "S",
+            "W"
+        ],
+        "items": []
+    },
+    {
+        "XY": "14",
+        "name": "Some bushes",
+        "img": "./assets/img/14.gif",
+        "color": "rgb(202,230,51)",
+        "dir": [
+            "E",
+            "W"
+        ],
+        "items": []
+    },
+    {
+        "XY": "15",
+        "name": "An old deserted hut",
+        "img": "./assets/img/15.gif",
+        "color": "rgb(220,204,61)",
+        "dir": [
+            "E",
+            "W"
+        ],
+        "items": []
+    },
+    {
+        "XY": "16",
+        "name": "The edge of a forest",
+        "img": "./assets/img/16.gif",
+        "color": "rgb(167,245,63)",
+        "dir": [
+            "E",
+            "W"
+        ],
+        "items": []
+    },
+    {
+        "XY": "17",
+        "name": "A dark forest",
+        "img": "./assets/img/17.gif",
+        "color": "rgb(140,253,99)",
+        "dir": [
+            "S",
+            "W"
+        ],
+        "items": []
+    },
+    {
+        "XY": "21",
+        "name": "A man nearby making tar",
+        "img": "./assets/img/21.gif",
+        "color": "rgb(255,190,99)",
+        "dir": [
+            "E",
+            "S"
+        ],
+        "items": []
+    },
+    {
+        "XY": "22",
+        "name": "A timber yard",
+        "img": "./assets/img/22.gif",
+        "color": "rgb(255,190,99)",
+        "dir": [
+            "E",
+            "S",
+            "W"
+        ],
+        "items": []
+    },
+    {
+        "XY": "23",
+        "name": "You are by a roadside shrine",
+        "img": "./assets/img/23.gif",
+        "color": "rgb(167,245,63)",
+        "dir": [
+            "N",
+            "E",
+            "S",
+            "W"
+        ],
+        "items": []
+    },
+    {
+        "XY": "24",
+        "name": "You are by a small chapel",
+        "img": "./assets/img/24.gif",
+        "color": "rgb(212,229,36)",
+        "dir": [
+            "E",
+            "W"
+        ],
+        "items": []
+    },
+    {
+        "XY": "25",
+        "name": "You are on a road leading to a wood",
+        "img": "./assets/img/25.gif",
+        "color": "rgb(167,245,63)",
+        "dir": [
+            "E",
+            "S",
+            "W"
+        ],
+        "items": []
+    },
+    {
+        "XY": "26",
+        "name": "You are in a forest",
+        "img": "./assets/img/26.gif",
+        "color": "rgb(167,245,63)",
+        "dir": [
+            "E",
+            "W"
+        ],
+        "items": []
+    },
+    {
+        "XY": "27",
+        "name": "You are in a deep forest",
+        "img": "./assets/img/27.gif",
+        "color": "rgb(140,253,99)",
+        "dir": [
+            "N",
+            "W"
+        ],
+        "items": []
+    },
+    {
+        "XY": "31",
+        "name": "You are by the Vistula River",
+        "img": "./assets/img/31.gif",
+        "color": "rgb(122,232,252)",
+        "dir": [
+            "N",
+            "E"
+        ],
+        "items": []
+    },
+    {
+        "XY": "32",
+        "name": "You are by the Vistula River",
+        "img": "./assets/img/32.gif",
+        "color": "rgb(140,214,255)",
+        "dir": [
+            "N",
+            "W"
+        ],
+        "items": []
+    },
+    {
+        "XY": "33",
+        "name": "You are on a bridge over river",
+        "img": "./assets/img/33.gif",
+        "color": "rgb(108,181,242)",
+        "dir": [
+            "N",
+            "S"
+        ],
+        "items": []
+    },
+    {
+        "XY": "34",
+        "name": "You are by the old tavern",
+        "img": "./assets/img/34.gif",
+        "color": "rgb(255,189,117)",
+        "dir": [
+            "E"
+        ],
+        "items": []
+    },
+    {
+        "XY": "35",
+        "name": "You are at the town's end",
+        "img": "./assets/img/35.gif",
+        "color": "rgb(255,190,99)",
+        "dir": [
+            "N",
+            "S",
+            "W"
+        ],
+        "items": []
+    },
+    {
+        "XY": "36",
+        "name": "You are in a butcher's shop",
+        "img": "./assets/img/36.gif",
+        "color": "rgb(255,188,102)",
+        "dir": [
+            "S"
+        ],
+        "items": []
+    },
+    {
+        "XY": "37",
+        "name": "You are in a cooper's house",
+        "img": "./assets/img/37.gif",
+        "color": "rgb(255,188,102)",
+        "dir": [
+            "S"
+        ],
+        "items": []
+    },
+    {
+        "XY": "41",
+        "name": "You are in the Wawel Castle",
+        "img": "./assets/img/41.gif",
+        "color": "rgb(255,176,141)",
+        "dir": [
+            "E"
+        ],
+        "items": []
+    },
+    {
+        "XY": "42",
+        "name": "You are inside a dragon's cave",
+        "img": "./assets/img/42.gif",
+        "color": "rgb(198,205,193)",
+        "dir": [
+            "E",
+            "W"
+        ],
+        "items": []
+    },
+    {
+        "XY": "43",
+        "name": "A perfect place to set a trap",
+        "img": "./assets/img/43.gif",
+        "color": "rgb(255,176,141)",
+        "dir": [
+            "N",
+            "W"
+        ],
+        "items": []
+    },
+    {
+        "XY": "44",
+        "name": "You are by the water mill",
+        "img": "./assets/img/44.gif",
+        "color": "rgb(255,190,99)",
+        "dir": [
+            "E"
+        ],
+        "items": []
+    },
+    {
+        "XY": "45",
+        "name": "You are at a main crossroad",
+        "img": "./assets/img/45.gif",
+        "color": "rgb(255,190,99)",
+        "dir": [
+            "N",
+            "E",
+            "S",
+            "W"
+        ],
+        "items": []
+    },
+    {
+        "XY": "46",
+        "name": "You are on a town street",
+        "img": "./assets/img/46.gif",
+        "color": "rgb(255,190,99)",
+        "dir": [
+            "N",
+            "E",
+            "W"
+        ],
+        "items": []
+    },
+    {
+        "XY": "47",
+        "name": "You are in a frontyard of your house",
+        "img": "./assets/img/47.gif",
+        "color": "rgb(255,190,99)",
+        "dir": [
+            "N",
+            "S",
+            "W"
+        ],
+        "items": []
+    },
+    {
+        "XY": "54",
+        "name": "You are by a swift stream",
+        "img": "./assets/img/54.gif",
+        "color": "rgb(108,181,242)",
+        "dir": [
+            "E"
+        ],
+        "items": []
+    },
+    {
+        "XY": "55",
+        "name": "You are on a street leading forest",
+        "img": "./assets/img/55.gif",
+        "color": "rgb(255,190,99)",
+        "dir": [
+            "N",
+            "S",
+            "W"
+        ],
+        "items": []
+    },
+    {
+        "XY": "56",
+        "name": "You are in a woodcutter's backyard",
+        "img": "./assets/img/56.gif",
+        "color": "rgb(255,190,99)",
+        "dir": [
+            "S"
+        ],
+        "items": []
+    },
+    {
+        "XY": "57",
+        "name": "You are in a shoemaker's house",
+        "img": "./assets/img/57.gif",
+        "color": "rgb(254,194,97)",
+        "dir": [
+            "N"
+        ],
+        "items": []
+    },
+    {
+        "XY": "64",
+        "name": "You are in a bleak funeral house",
+        "img": "./assets/img/64.gif",
+        "color": "rgb(254,194,97)",
+        "dir": [
+            "E"
+        ],
+        "items": []
+    },
+    {
+        "XY": "65",
+        "name": "You are on a path leading to the wood",
+        "img": "./assets/img/26.gif",
+        "color": "rgb(167,245,63)",
+        "dir": [
+            "N",
+            "E",
+            "W"
+        ],
+        "items": []
+    },
+    {
+        "XY": "66",
+        "name": "You are at the edge of a forest",
+        "img": "./assets/img/66.gif",
+        "color": "rgb(167,245,63)",
+        "dir": [
+            "N",
+            "E",
+            "W"
+        ],
+        "items": []
+    },
+    {
+        "XY": "67",
+        "name": "You are in a deep forest",
+        "img": "./assets/img/27.gif",
+        "color": "rgb(140,253,99)",
+        "dir": [
+            "W"
+        ],
+        "items": []
+    }
+]

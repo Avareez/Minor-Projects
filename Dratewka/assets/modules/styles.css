@@ -1,0 +1,137 @@
+@font-face {
+    font-family: "Taka retro gierkowa";
+    src: url("../fonts/PressStart2P.ttf");
+}
+
+* {
+    font-family: "Taka retro gierkowa", tahoma;
+    box-sizing: border-box;
+    color: snow;
+}
+
+body {
+    background-color: snow;
+    background-color: black;
+}
+
+h1 {
+    position: absolute;
+    left: 0;
+    top: 0;
+    background-color: rgb(58, 52, 52);
+    border: 2px snow solid;
+    color: snow;
+    width: 100%;
+    padding: 20px;
+    text-align: left;
+}
+
+#gameboard {
+    position: absolute;
+    left: 50%;
+    margin-left: -300px;
+    top: 150px;
+    width: 620px;
+    height: 390px;
+    background-color: rgb(58, 52, 52);
+    border: 2px snow solid;
+}
+
+#name {
+    margin-top: 10px;
+}
+
+#location {
+    border: 2px snow solid;
+    width: 320px;
+}
+
+#compass {
+    position: absolute;
+    left: 370px;
+    border: 2px snow solid;
+    width: 200px;
+    top: 70px;
+}
+
+#movementDiv {
+    position: absolute;
+    top: 340px
+}
+
+#msgDiv {
+    position: absolute;
+    top: 340px;
+    display: none;
+}
+
+#movement {
+    border: none;
+    outline: none;
+    background: none;
+    font-size: 16px;
+    width: 430px;
+    caret-color: white;
+}
+
+#movement[contenteditable] {
+    caret-color: white;
+}
+
+.mar {
+    margin: 5px;
+    margin-left: 10px;
+}
+
+#start {
+    width: 100%;
+}
+
+.fullscreen {
+    width: 70%;
+    margin-left: 15%;
+}
+
+#N {
+    position: absolute;
+    background-color: black;
+    width: 12px;
+    height: 10px;
+    left: 74.5%;
+    top: 18.5%;
+}
+
+#E {
+    position: absolute;
+    background-color: black;
+    width: 14px;
+    height: 11px;
+    left: 88%;
+    top: 25%;
+}
+
+#S {
+    position: absolute;
+    background-color: black;
+    width: 12px;
+    height: 11px;
+    left: 75%;
+    top: 39%;
+}
+
+#W {
+    position: absolute;
+    background-color: black;
+    width: 12px;
+    height: 11px;
+    left: 62%;
+    top: 25%;
+}
+
+.martop {
+    margin-top: 70px;
+}
+
+.martop2 {
+    margin-top: 170px;
+}
