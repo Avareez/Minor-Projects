@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="pl-PL">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Żużel - Tor Owalny</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #654321;
+        }
+
+        canvas {
+            border: green 5px solid;
+        }
+
+        #menu {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+            border: green 5px solid;
+        }
+
+        #laps {
+            background-color: white;
+            color: green;
+            text-align: center;
+            height: 40px;
+            width: 200px;
+            display: flex;
+            margin-left: calc(50% - 100px);
+            border: green 5px solid;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        label {
+            margin-top: 10px;
+        }
+
+        button {
+            background-color: green;
+            color: white;
+            border-radius: 10px;
+            border: none;
+            font-size: 20px;
+            padding: 5px;
+            width: 100px;
+            margin-top: 20px;
+        }
+
+        select {
+            background-color: green;
+            color: white;
+            border-radius: 10px;
+            border: none;
+            font-size: 10px;
+            padding: 5px;
+            width: 50px;
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        input {
+            background-color: green;
+            color: white;
+            border-radius: 10px;
+            border: none;
+            font-size: 10px;
+            padding: 5px;
+            width: 50px;
+            margin-top: 20px;
+            text-align: center;
+            margin: 0 10px 0 10px;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="menu">
+        <h1>Żużel - Tor Owalny</h1>
+        <label for="numPlayers">Wybierz ilość graczy (2-4):</label>
+        <select id="numPlayers">
+            <option value="2">2</option>
+            <option value="3">3</option>
+            <option value="4">4</option>
+        </select>
+        <div id="controls"></div>
+        <button id="playButton">Play</button>
+    </div>
+
+    <div id="game">
+        <div id="laps"></div>
+        <canvas id="canvas" width="1100" height="600"></canvas>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        const img = new Image();
+        img.src = "assets/grass.png";
+
+        // Obrazy motocykli
+        const motorImages = [];
+        motorImages.push(new Image());
+        motorImages[0].src = "assets/motor1.png";
+        motorImages.push(new Image());
+        motorImages[1].src = "assets/motor4.png";
+        motorImages.push(new Image());
+        motorImages[2].src = "assets/motor4.png";
+        motorImages.push(new Image());
+        motorImages[3].src = "assets/motor4.png";
+
+        let players = [];
+        const totalLaps = 3;
+
+        // Funkcja rysująca pole gry
+        function drawPlayfield() {
+            const pattern = ctx.createPattern(img, 'repeat');
+            ctx.rect(0, 0, 1100, 600);
+            ctx.fillStyle = pattern;
+            ctx.fill();
+
+            // Tor
+            ctx.beginPath();
+            ctx.lineWidth = 10;
+            ctx.arc(300, 300, 250, 0.5 * Math.PI, 1.5 * Math.PI);
+            ctx.arc(800, 300, 250, 1.5 * Math.PI, 0.5 * Math.PI);
+            ctx.closePath();
+            ctx.strokeStyle = '#654321';
+            ctx.stroke();
+            ctx.fillStyle = "white";
+            ctx.fill();
+
+            // Wewnętrzne pole
+            ctx.beginPath();
+            ctx.lineWidth = 10;
+            ctx.arc(300, 300, 100, 0.5 * Math.PI, 1.5 * Math.PI);
+            ctx.arc(800, 300, 100, 1.5 * Math.PI, 0.5 * Math.PI);
+            ctx.closePath();
+            ctx.strokeStyle = '#654321';
+            ctx.stroke();
+            ctx.fillStyle = pattern;
+            ctx.fill();
+
+            // Meta
+            ctx.beginPath();
+            ctx.moveTo(750, 50);
+            ctx.lineTo(750, 200);
+            ctx.lineWidth = 5;
+            ctx.strokeStyle = 'red';
+            ctx.stroke();
+        }
+
+        const keysPressed = {};
+
+        window.addEventListener('keydown', (e) => {
+            keysPressed[e.key] = true;
+        });
+
+        window.addEventListener('keyup', (e) => {
+            keysPressed[e.key] = false;
+        });
+
+        // Funkcja sprawdzająca, czy gracz znajduje się na torze
+        function isPlayerOnTrack(player) {
+            const leftCenter = { x: 300, y: 300 };
+            const rightCenter = { x: 800, y: 300 };
+
+            const distLeft = Math.sqrt((player.x - leftCenter.x) ** 2 + (player.y - leftCenter.y) ** 2);
+            const distRight = Math.sqrt((player.x - rightCenter.x) ** 2 + (player.y - rightCenter.y) ** 2);
+
+            const outerRadius = 250;
+            const innerRadius = 100;
+
+            const onStraight = player.x >= 300 && player.x <= 800 &&
+                (player.y >= 50 && player.y <= 550);
+
+            const inCenterRectangle = player.x >= 300 && player.x <= 800 &&
+                player.y >= 200 && player.y <= 400;
+
+            const onLeftArc = distLeft >= innerRadius && distLeft <= outerRadius;
+            const onRightArc = distRight >= innerRadius && distRight <= outerRadius;
+
+            return (onLeftArc || onRightArc || onStraight) && !inCenterRectangle;
+        }
+
+        // Sprawdzanie, czy gracz przekroczył linię mety
+        function checkLapCompletion(player) {
+            const finishLineYStart = 390;
+            const finishLineYEnd = 550;
+
+            console.log(player.x)
+            if (player.x < 750 && player.lastLapX >= 750) {
+                player.laps--;
+            }
+
+            player.lastLapX = player.x;
+        }
+
+        // Aktualizowanie pozycji graczy
+        function updatePlayerPositions() {
+            players.forEach(player => {
+                if (player.alive) {
+                    if (keysPressed[player.turnLeftKey]) {
+                        player.angle -= 0.015;
+                    }
+                    if (keysPressed[player.turnRightKey]) {
+                        player.angle += 0.015;
+                    }
+
+                    player.x += Math.cos(player.angle) * 2;
+                    player.y += Math.sin(player.angle) * 2;
+
+                    if (!isPlayerOnTrack(player)) {
+                        player.alive = false;
+                    }
+
+                    checkLapCompletion(player);
+
+                    if (player.alive) {
+                        player.trail.push({ x: player.x, y: player.y });
+                        if (player.trail.length > 300) {
+                            player.trail.shift();
+                        }
+                    }
+                }
+            });
+        }
+
+        // Rysowanie śladów
+        function drawTrails() {
+            players.forEach(player => {
+                if (player.alive) {
+                    for (let i = 1; i < player.trail.length; i++) {
+                        const opacity = i / player.trail.length;
+                        ctx.beginPath();
+                        ctx.moveTo(player.trail[i - 1].x, player.trail[i - 1].y);
+                        ctx.lineTo(player.trail[i].x, player.trail[i].y);
+                        ctx.strokeStyle = `rgba(${player.color}, ${opacity})`;
+                        ctx.lineWidth = 2;
+                        ctx.stroke();
+                    }
+                }
+            });
+        }
+
+        // Rysowanie graczy
+        function drawPlayers() {
+            players.forEach((player, index) => {
+                if (player.alive) {
+                    const motorImage = motorImages[index % motorImages.length];
+                    ctx.save();
+                    ctx.translate(player.x, player.y);
+                    ctx.rotate(player.angle);
+                    ctx.drawImage(motorImage, -15, -15, 30, 30);
+                    ctx.restore();
+                }
+            });
+        }
+
+        // Główna pętla gry
+        function gameLoop() {
+            drawPlayfield();
+            updatePlayerPositions();
+            drawTrails();
+            drawPlayers();
+            updateLapsDisplay();
+            checkForWinner();
+            requestAnimationFrame(gameLoop);
+        }
+
+        // Funkcja aktualizująca wyświetlanie pozostałych okrążeń
+        function updateLapsDisplay() {
+            const bestPlayer = Math.min(...players.map(player => player.laps));
+            document.getElementById('laps').textContent = `Okrążenia do końca: ${bestPlayer}`;
+        }
+
+        // Sprawdzanie, czy ktoś wygrał
+        function checkForWinner() {
+            const alivePlayers = players.filter(player => player.alive);
+            const completed = players.find(player => player.laps <= 0);
+
+            if (completed) {
+                alert(`Gracz ${players.indexOf(completed) + 1} wygrał!`);
+                resetGame();
+            } else if (alivePlayers.length === 1) {
+                alert(`Ostatni przy życiu - Gracz ${players.indexOf(alivePlayers[0]) + 1} wygrał!`);
+                resetGame();
+            }
+        }
+
+        // Funkcja resetująca grę
+        function resetGame() {
+            players.forEach(player => {
+                player.x = 250;
+                player.y = 435;
+                player.angle = Math.PI;
+                player.alive = true;
+                player.laps = totalLaps;
+                player.trail = [];
+            });
+            document.getElementById('menu').style.display = "block";
+            document.getElementById('game').style.display = "none";
+            window.location.reload();
+        }
+
+        setInterval(() => {
+            players.forEach(player => {
+                if (!isPlayerOnTrack(player)) {
+                    player.alive = false;
+                }
+            })
+        }, 10);
+
+
+        // Funkcja do uruchamiania gry
+        function startGame() {
+            document.getElementById('menu').style.display = "none";
+            document.getElementById('game').style.display = "block";
+            players = setupPlayers();
+            img.onload = function () {
+                drawPlayfield();
+                gameLoop();
+            };
+            if (img.complete) {
+                drawPlayfield();
+                gameLoop();
+            }
+        }
+
+        // Ustawienia graczy
+        function setupPlayers() {
+            const numPlayers = document.getElementById('numPlayers').value;
+            const playerData = [];
+            const colors = ['255, 0, 0', '0, 0, 255', '0, 255, 0', '255, 165, 0'];
+
+            for (let i = 0; i < numPlayers; i++) {
+                const turnLeftKey = document.getElementById(`leftKey${i}`).value;
+                const turnRightKey = document.getElementById(`rightKey${i}`).value;
+                playerData.push({
+                    x: 750, y: 75 + i * 25, angle: Math.PI, color: colors[i],
+                    turnLeftKey: turnLeftKey, turnRightKey: turnRightKey, alive: true, trail: [],
+                    laps: totalLaps, lastLapY: 0
+                });
+            }
+            return playerData;
+        }
+
+        // Generowanie kontrolki wyboru klawiszy dla każdego gracza
+        function generatePlayerControls(numPlayers) {
+            const controlsDiv = document.getElementById('controls');
+            controlsDiv.innerHTML = '';
+            for (let i = 0; i < numPlayers; i++) {
+                controlsDiv.innerHTML += `
+                    <div>
+                        <h3>Gracz ${i + 1} (${['red', 'blue', 'green', 'orange'][i]})</h3>
+                        <label for="leftKey${i}">Klawisz skrętu w lewo:</label>
+                        <input type="text" id="leftKey${i}" value="${['a', 'j', 'q', 'n'][i]}">
+                        <label for="rightKey${i}">Klawisz skrętu w prawo:</label>
+                        <input type="text" id="rightKey${i}" value="${['d', 'l', 'e', 'm'][i]}">
+                    </div>
+                `;
+            }
+        }
+
+        // Nasłuchuj zmian liczby graczy i generuj odpowiednie kontrolki
+        document.getElementById('numPlayers').addEventListener('change', function () {
+            generatePlayerControls(this.value);
+        });
+
+        // Inicjalizacja kontroli dla 2 graczy na starcie
+        generatePlayerControls(2);
+
+        // Rozpoczęcie gry po kliknięciu przycisku "Play"
+        document.getElementById('playButton').addEventListener('click', startGame);
+
+        // Initializacja
+        addEventListener("load", (event) => {
+            document.getElementById('menu').style.display = "block";
+            document.getElementById('game').style.display = "none";
+        });
+    </script>
+</body>
+
+</html>
