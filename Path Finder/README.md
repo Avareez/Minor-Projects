@@ -28,8 +28,8 @@ No build step or dependencies required — it's a single HTML file.
 1. Clone or download the repository:
 
 ```bash
-git clone https://github.com/Avareez/pathfinder.git
-cd pathfinder
+git clone https://github.com/Avareez/Minor-Projects.git
+cd "Minor-Projects/Path Finder"
 ```
 
 2. Open the project folder in **VS Code**, right-click `pathfinder.html` and select **"Open with Live Server"**.
