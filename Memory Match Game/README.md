@@ -28,11 +28,11 @@ No build step or dependencies required — it's a single HTML file.
 1. Clone or download the repository:
 
 ```bash
-git clone https://github.com/Avareez/memory-match.git
-cd memory-match
+git clone https://github.com/Avareez/Minor-Projects.git
+cd "Minor-Projects/Memory Match Game"
 ```
 
-2. Open the project folder in **VS Code**, right-click `index.html` and select **"Open with Live Server"**.
+2. Open the project folder in **VS Code**, right-click `Memory.html` and select **"Open with Live Server"**.
 
 The app will open in your browser at `http://127.0.0.1:5500`.
 
