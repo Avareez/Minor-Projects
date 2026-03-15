@@ -1,4 +1,4 @@
-# 🚢 Statki (Battleship)
+# 🚢 Battleship Game (Statki)
 
 A browser-based Battleship game built with vanilla HTML, CSS and JavaScript. Place your fleet on a 10×10 grid, then take turns shooting against a bot opponent.
 
