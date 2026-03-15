@@ -1,0 +1,701 @@
+<!DOCTYPE html>
+<html lang="pl-PL">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Żużel - Tor Owalny</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@400;600;700&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --dirt: #8B5E3C;
+            --dark: #1a1008;
+            --accent: #FF6B00;
+            --white: #F5F0E8;
+            --track: #e8e0d0;
+            --grass: #3a6b2a;
+            --grass2: #2d5220;
+            --panel: rgba(10, 6, 2, 0.88);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Barlow Condensed', sans-serif;
+            background: var(--dark);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            overflow: hidden;
+        }
+
+        body::after {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background: repeating-linear-gradient(0deg,
+                    transparent,
+                    transparent 2px,
+                    rgba(0, 0, 0, 0.08) 2px,
+                    rgba(0, 0, 0, 0.08) 4px);
+            pointer-events: none;
+            z-index: 999;
+        }
+
+        #menu {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0;
+            background: var(--panel);
+            border: 2px solid var(--accent);
+            padding: 0 40px 36px;
+            min-width: 400px;
+            box-shadow: 0 0 60px rgba(255, 107, 0, 0.25), inset 0 0 40px rgba(0, 0, 0, 0.6);
+        }
+
+        #menu::before {
+            content: '';
+            display: block;
+            width: calc(100% + 4px);
+            margin-left: -2px;
+            height: 8px;
+            background: repeating-linear-gradient(90deg,
+                    var(--accent) 0px, var(--accent) 20px,
+                    #111 20px, #111 30px);
+            margin-bottom: 24px;
+        }
+
+        #menu h1 {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 3.4rem;
+            letter-spacing: 4px;
+            color: var(--accent);
+            text-shadow: 0 0 30px rgba(255, 107, 0, 0.5), 3px 3px 0 #000;
+            line-height: 1;
+            margin-bottom: 4px;
+        }
+
+        #menu h1 span {
+            color: var(--white);
+        }
+
+        .form-label {
+            font-size: 0.75rem;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            color: rgba(245, 240, 232, 0.5);
+            margin-bottom: 6px;
+            align-self: flex-start;
+        }
+
+        select {
+            background: #0d0905;
+            color: var(--accent);
+            border: 1px solid var(--accent);
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 1.4rem;
+            letter-spacing: 2px;
+            padding: 6px 18px;
+            width: 100%;
+            margin-bottom: 20px;
+            appearance: none;
+            cursor: pointer;
+            outline: none;
+        }
+
+        select:hover {
+            background: #1a0f05;
+        }
+
+        #controls {
+            width: 100%;
+        }
+
+        .player-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+            padding: 10px 14px;
+            border-left: 3px solid var(--p-color, var(--accent));
+            background: rgba(255, 255, 255, 0.03);
+        }
+
+        .player-tag {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 1.1rem;
+            letter-spacing: 1px;
+            color: var(--p-color, var(--accent));
+            min-width: 70px;
+        }
+
+        .key-group {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            flex: 1;
+        }
+
+        .key-group span {
+            font-size: 0.65rem;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: rgba(245, 240, 232, 0.35);
+        }
+
+        input[type="text"] {
+            background: #0d0905;
+            color: var(--white);
+            border: 1px solid rgba(255, 107, 0, 0.3);
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 1.2rem;
+            letter-spacing: 1px;
+            text-align: center;
+            width: 36px;
+            height: 36px;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        input[type="text"]:focus {
+            border-color: var(--accent);
+        }
+
+        #playButton {
+            margin-top: 24px;
+            width: 100%;
+            height: 54px;
+            background: var(--accent);
+            color: #000;
+            border: none;
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 1.8rem;
+            letter-spacing: 6px;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            transition: background 0.15s;
+        }
+
+        #playButton::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 60%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.2);
+            transform: skewX(-20deg);
+            transition: left 0.4s;
+        }
+
+        #playButton:hover {
+            background: #ff8c2a;
+        }
+
+        #playButton:hover::before {
+            left: 150%;
+        }
+
+        #game {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            gap: 0;
+        }
+
+        #hud {
+            width: 1100px;
+            height: 44px;
+            background: #0d0905;
+            border: 2px solid var(--accent);
+            border-bottom: none;
+            display: flex;
+            align-items: center;
+            padding: 0 16px;
+            gap: 24px;
+        }
+
+        .hud-title {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 1.3rem;
+            letter-spacing: 3px;
+            color: var(--accent);
+        }
+
+        .hud-sep {
+            width: 1px;
+            height: 20px;
+            background: rgba(255, 107, 0, 0.3);
+        }
+
+        .lap-indicators {
+            display: flex;
+            gap: 16px;
+            flex: 1;
+        }
+
+        .lap-pill {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.75rem;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: rgba(245, 240, 232, 0.5);
+        }
+
+        .lap-pip {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: var(--p-color, #666);
+            box-shadow: 0 0 6px var(--p-color, #666);
+        }
+
+        .lap-val {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 1.1rem;
+            letter-spacing: 1px;
+            color: var(--white);
+        }
+
+        canvas {
+            display: block;
+            border: 2px solid var(--accent);
+            border-top: none;
+            box-shadow: 0 8px 40px rgba(0, 0, 0, 0.8);
+        }
+
+        .hidden {
+            display: none !important;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="menu">
+        <h1>Żużel</h1>
+
+        <div class="form-label">Liczba graczy</div>
+        <select id="numPlayers">
+            <option value="2">2 graczy</option>
+            <option value="3">3 graczy</option>
+            <option value="4">4 graczy</option>
+        </select>
+
+        <div id="controls"></div>
+        <button id="playButton">START</button>
+    </div>
+
+    <div id="game">
+        <div id="hud">
+            <div class="hud-title">Żużel</div>
+            <div class="hud-sep"></div>
+            <div class="lap-indicators" id="lapIndicators"></div>
+        </div>
+        <canvas id="canvas" width="1100" height="600"></canvas>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+
+        const PLAYER_COLORS = [
+            { stroke: '#FF3B3B', fill: '#FF6B6B', rgb: '255,59,59', name: 'Czerwony' },
+            { stroke: '#3B8FFF', fill: '#6BAAFF', rgb: '59,143,255', name: 'Niebieski' },
+            { stroke: '#2ECC71', fill: '#5DDFAA', rgb: '46,204,113', name: 'Zielony' },
+            { stroke: '#FFD700', fill: '#FFE84D', rgb: '255,215,0', name: 'Żółty' },
+        ];
+
+        let players = [];
+        const totalLaps = 3;
+        let gameRunning = false;
+        let winnerAnnounced = false;
+
+        const keysPressed = {};
+        window.addEventListener('keydown', e => { keysPressed[e.key] = true; });
+        window.addEventListener('keyup', e => { keysPressed[e.key] = false; });
+
+        function drawCheckerboard(x, y, w, h, size, c1, c2) {
+            for (let row = 0; row * size < h; row++) {
+                for (let col = 0; col * size < w; col++) {
+                    ctx.fillStyle = (row + col) % 2 === 0 ? c1 : c2;
+                    ctx.fillRect(x + col * size, y + row * size,
+                        Math.min(size, w - col * size),
+                        Math.min(size, h - row * size));
+                }
+            }
+        }
+
+        function drawGrassBg() {
+            const grd = ctx.createLinearGradient(0, 0, 1100, 600);
+            grd.addColorStop(0, '#2d5220');
+            grd.addColorStop(0.5, '#3a6b2a');
+            grd.addColorStop(1, '#2a4d1e');
+            ctx.fillStyle = grd;
+            ctx.fillRect(0, 0, 1100, 600);
+
+            ctx.save();
+            ctx.globalAlpha = 0.07;
+            for (let i = 0; i < 1100; i += 18) {
+                ctx.fillStyle = i % 36 === 0 ? '#000' : '#fff';
+                ctx.fillRect(i, 0, 9, 600);
+            }
+            ctx.restore();
+        }
+
+        function buildTrackPath(outer, inner) {
+            ctx.beginPath();
+            ctx.arc(300, 300, outer, 0.5 * Math.PI, 1.5 * Math.PI);
+            ctx.arc(800, 300, outer, 1.5 * Math.PI, 0.5 * Math.PI);
+            ctx.closePath();
+        }
+
+        function drawPlayfield() {
+            drawGrassBg();
+
+            buildTrackPath(250, 100);
+            const trackGrd = ctx.createRadialGradient(550, 300, 80, 550, 300, 270);
+            trackGrd.addColorStop(0, '#d4c4a0');
+            trackGrd.addColorStop(0.6, '#c8b890');
+            trackGrd.addColorStop(1, '#b8a07a');
+            ctx.fillStyle = trackGrd;
+            ctx.fill();
+
+            buildTrackPath(250, 100);
+            ctx.strokeStyle = '#5a3e20';
+            ctx.lineWidth = 12;
+            ctx.stroke();
+
+            buildTrackPath(247, 100);
+            ctx.strokeStyle = 'rgba(255,255,255,0.7)';
+            ctx.lineWidth = 3;
+            ctx.stroke();
+
+            ctx.beginPath();
+            ctx.arc(300, 300, 100, 0.5 * Math.PI, 1.5 * Math.PI);
+            ctx.arc(800, 300, 100, 1.5 * Math.PI, 0.5 * Math.PI);
+            ctx.closePath();
+            const islandGrd = ctx.createLinearGradient(300, 200, 800, 400);
+            islandGrd.addColorStop(0, '#3a6b2a');
+            islandGrd.addColorStop(1, '#2d5220');
+            ctx.fillStyle = islandGrd;
+            ctx.fill();
+            ctx.strokeStyle = '#5a3e20';
+            ctx.lineWidth = 10;
+            ctx.stroke();
+
+            ctx.beginPath();
+            ctx.arc(300, 300, 103, 0.5 * Math.PI, 1.5 * Math.PI);
+            ctx.arc(800, 300, 103, 1.5 * Math.PI, 0.5 * Math.PI);
+            ctx.closePath();
+            ctx.strokeStyle = 'rgba(255,255,255,0.6)';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+
+            ctx.save();
+            ctx.globalAlpha = 0.12;
+            ctx.strokeStyle = '#3a2a10';
+            ctx.lineWidth = 14;
+            ctx.beginPath();
+            ctx.arc(300, 300, 210, 0.5 * Math.PI, 1.5 * Math.PI);
+            ctx.arc(800, 300, 210, 1.5 * Math.PI, 0.5 * Math.PI);
+            ctx.closePath();
+            ctx.stroke();
+            ctx.restore();
+
+            drawCheckerboard(745, 50, 10, 150, 10, '#fff', '#111');
+
+            ctx.save();
+            ctx.translate(737, 30);
+            ctx.font = "bold 11px 'Barlow Condensed'";
+            ctx.letterSpacing = '2px';
+            ctx.fillStyle = 'rgba(255,255,255,0.7)';
+            ctx.fillText('FINISH', 0, 0);
+            ctx.restore();
+
+            ctx.save();
+            ctx.globalAlpha = 0.35;
+            for (let i = 0; i < 4; i++) {
+                ctx.fillStyle = i % 2 === 0 ? '#fff' : '#FF6B00';
+                ctx.fillRect(748, 390 + i * 12, 8, 10);
+            }
+            ctx.restore();
+        }
+
+        function isPlayerOnTrack(p) {
+            const dL = Math.hypot(p.x - 300, p.y - 300);
+            const dR = Math.hypot(p.x - 800, p.y - 300);
+            const outer = 250, inner = 100;
+
+            const onStraight = p.x >= 300 && p.x <= 800 && p.y >= 50 && p.y <= 550;
+            const inIsland = p.x >= 300 && p.x <= 800 && p.y >= 200 && p.y <= 400;
+            const onLeftArc = dL >= inner && dL <= outer;
+            const onRightArc = dR >= inner && dR <= outer;
+
+            return (onLeftArc || onRightArc || onStraight) && !inIsland;
+        }
+
+        function checkLap(player) {
+            if (player.x < 750 && player.lastLapX >= 750) {
+                player.laps--;
+            }
+            player.lastLapX = player.x;
+        }
+
+        function updatePlayers() {
+            players.forEach(p => {
+                if (!p.alive) return;
+                if (keysPressed[p.leftKey]) p.angle -= 0.02;
+                if (keysPressed[p.rightKey]) p.angle += 0.02;
+
+                p.x += Math.cos(p.angle) * 2;
+                p.y += Math.sin(p.angle) * 2;
+
+                if (!isPlayerOnTrack(p)) { p.alive = false; return; }
+
+                checkLap(p);
+
+                p.trail.push({ x: p.x, y: p.y });
+                if (p.trail.length > 350) p.trail.shift();
+            });
+        }
+
+        function drawTrails() {
+            players.forEach(p => {
+                if (p.trail.length < 2) return;
+                for (let i = 1; i < p.trail.length; i++) {
+                    const t = i / p.trail.length;
+                    ctx.beginPath();
+                    ctx.moveTo(p.trail[i - 1].x, p.trail[i - 1].y);
+                    ctx.lineTo(p.trail[i].x, p.trail[i].y);
+                    ctx.strokeStyle = `rgba(${p.col.rgb},${t * 0.55})`;
+                    ctx.lineWidth = 2.5;
+                    ctx.stroke();
+                }
+            });
+        }
+
+        function drawPlayers() {
+            players.forEach((p, idx) => {
+                ctx.save();
+                ctx.translate(p.x, p.y);
+                ctx.rotate(p.angle);
+
+                if (p.alive) {
+                    // Glow
+                    ctx.shadowColor = p.col.stroke;
+                    ctx.shadowBlur = 12;
+
+                    // Body
+                    ctx.fillStyle = p.col.fill;
+                    ctx.beginPath();
+                    ctx.ellipse(0, 0, 14, 7, 0, 0, Math.PI * 2);
+                    ctx.fill();
+
+                    // Stripe
+                    ctx.fillStyle = p.col.stroke;
+                    ctx.fillRect(-6, -2, 12, 4);
+
+                    // Wheel front
+                    ctx.fillStyle = '#111';
+                    ctx.beginPath();
+                    ctx.ellipse(10, 0, 5, 3, 0, 0, Math.PI * 2);
+                    ctx.fill();
+
+                    // Wheel back
+                    ctx.beginPath();
+                    ctx.ellipse(-10, 0, 5, 3, 0, 0, Math.PI * 2);
+                    ctx.fill();
+
+                    // Helmet
+                    ctx.fillStyle = p.col.fill;
+                    ctx.shadowBlur = 6;
+                    ctx.beginPath();
+                    ctx.arc(3, -4, 5, 0, Math.PI * 2);
+                    ctx.fill();
+                    ctx.fillStyle = 'rgba(200,230,255,0.4)';
+                    ctx.beginPath();
+                    ctx.arc(4, -5, 2.5, 0, Math.PI * 2);
+                    ctx.fill();
+
+                } else {
+                    // Crash - dark X
+                    ctx.globalAlpha = 0.5;
+                    ctx.strokeStyle = '#ff4444';
+                    ctx.lineWidth = 3;
+                    ctx.beginPath();
+                    ctx.moveTo(-10, -10); ctx.lineTo(10, 10);
+                    ctx.moveTo(10, -10); ctx.lineTo(-10, 10);
+                    ctx.stroke();
+                }
+
+                ctx.restore();
+
+                // Player number badge
+                if (p.alive) {
+                    ctx.save();
+                    ctx.translate(p.x, p.y - 20);
+                    ctx.fillStyle = p.col.stroke;
+                    ctx.beginPath();
+                    ctx.roundRect(-8, -8, 16, 14, 3);
+                    ctx.fill();
+                    ctx.fillStyle = '#fff';
+                    ctx.font = "bold 9px 'Barlow Condensed'";
+                    ctx.textAlign = 'center';
+                    ctx.textBaseline = 'middle';
+                    ctx.fillText(idx + 1, 0, -1);
+                    ctx.restore();
+                }
+            });
+        }
+
+        function updateHUD() {
+            const cont = document.getElementById('lapIndicators');
+            cont.innerHTML = '';
+            players.forEach((p, i) => {
+                const div = document.createElement('div');
+                div.className = 'lap-pill';
+                const laps = Math.max(0, p.laps);
+                div.innerHTML = `
+            <div class="lap-pip" style="background:${p.col.stroke};box-shadow:0 0 6px ${p.col.stroke}"></div>
+            <span>P${i + 1}</span>
+            <span class="lap-val">${p.alive ? laps + ' okr.' : '✗'}</span>
+        `;
+                cont.appendChild(div);
+            });
+        }
+
+        function checkWinner() {
+            if (winnerAnnounced) return;
+            const alive = players.filter(p => p.alive);
+            const done = players.find(p => p.laps <= 0);
+
+            if (done) {
+                winnerAnnounced = true;
+                const idx = players.indexOf(done) + 1;
+                setTimeout(() => {
+                    showResult(`Gracz ${idx} (${done.col.name}) wygrał wyścig! 🏆`);
+                }, 200);
+            } else if (alive.length === 1) {
+                winnerAnnounced = true;
+                const idx = players.indexOf(alive[0]) + 1;
+                setTimeout(() => {
+                    showResult(`Gracz ${idx} (${alive[0].col.name}) – ostatni na torze! 🏁`);
+                }, 200);
+            } else if (alive.length === 0) {
+                winnerAnnounced = true;
+                setTimeout(() => { showResult('Wszyscy wypadli! Remis!'); }, 200);
+            }
+        }
+
+        function showResult(msg) {
+            gameRunning = false;
+            ctx.save();
+            ctx.fillStyle = 'rgba(0,0,0,0.72)';
+            ctx.fillRect(0, 0, 1100, 600);
+
+            ctx.font = "bold 58px 'Bebas Neue'";
+            ctx.textAlign = 'center';
+            ctx.letterSpacing = '6px';
+            ctx.fillStyle = '#FF6B00';
+            ctx.shadowColor = '#FF6B00';
+            ctx.shadowBlur = 30;
+            ctx.fillText(msg, 550, 270);
+
+            ctx.font = "28px 'Barlow Condensed'";
+            ctx.fillStyle = 'rgba(245,240,232,0.7)';
+            ctx.shadowBlur = 0;
+            ctx.letterSpacing = '4px';
+            ctx.fillText('Naciśnij F5 aby zagrać ponownie', 550, 330);
+            ctx.restore();
+        }
+
+        function gameLoop() {
+            if (!gameRunning) return;
+            drawPlayfield();
+            updatePlayers();
+            drawTrails();
+            drawPlayers();
+            updateHUD();
+            checkWinner();
+            requestAnimationFrame(gameLoop);
+        }
+
+        function setupPlayers() {
+            const n = parseInt(document.getElementById('numPlayers').value);
+            const startPositions = [
+                { x: 750, y: 80 },
+                { x: 750, y: 110 },
+                { x: 750, y: 140 },
+                { x: 750, y: 170 },
+            ];
+            const defaults = {
+                left: ['a', 'j', 'q', 'n'],
+                right: ['d', 'l', 'e', 'm'],
+            };
+            return Array.from({ length: n }, (_, i) => ({
+                x: startPositions[i].x,
+                y: startPositions[i].y,
+                angle: Math.PI,
+                col: PLAYER_COLORS[i],
+                leftKey: document.getElementById(`leftKey${i}`)?.value ?? defaults.left[i],
+                rightKey: document.getElementById(`rightKey${i}`)?.value ?? defaults.right[i],
+                alive: true,
+                trail: [],
+                laps: totalLaps,
+                lastLapX: 750,
+            }));
+        }
+
+        function generateControls(n) {
+            const div = document.getElementById('controls');
+            div.innerHTML = '';
+            const defL = ['a', 'j', 'q', 'n'];
+            const defR = ['d', 'l', 'e', 'm'];
+            for (let i = 0; i < n; i++) {
+                const c = PLAYER_COLORS[i];
+                div.innerHTML += `
+        <div class="player-row" style="--p-color:${c.stroke}">
+            <div class="player-tag">${c.name}</div>
+            <div class="key-group">
+                <span>←</span>
+                <input type="text" id="leftKey${i}"  value="${defL[i]}" maxlength="1">
+                <span>→</span>
+                <input type="text" id="rightKey${i}" value="${defR[i]}" maxlength="1">
+            </div>
+        </div>`;
+            }
+        }
+
+        function startGame() {
+            document.getElementById('menu').style.display = 'none';
+            document.getElementById('game').style.display = 'flex';
+
+            players = setupPlayers();
+            winnerAnnounced = false;
+            gameRunning = true;
+
+            updateHUD();
+            gameLoop();
+        }
+
+        document.getElementById('numPlayers').addEventListener('change', function () {
+            generateControls(+this.value);
+        });
+        document.getElementById('playButton').addEventListener('click', startGame);
+        generateControls(2);
+    </script>
+</body>
+
+</html>
