@@ -34,8 +34,8 @@ A tile-based map editor built with TypeScript and HTML Canvas. Paint tiles onto 
 
 ```bash
 # Clone the repository
-git clone https://github.com/Avareez/map-maker.git
-cd map-maker
+git clone https://github.com/Avareez/Minor-Projects.git
+cd "Minor-Projects/Map Maker"
 
 # Install dependencies
 npm install
