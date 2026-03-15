@@ -41,7 +41,6 @@
             color: snow;
             font-size: 20px;
             float: left;
-
         }
 
         button:hover {
@@ -52,7 +51,7 @@
         }
 
         .sHead {
-            /*Głowa domyślnie skierowana w prawo*/
+            /* Głowa domyślnie skierowana w prawo */
             width: 50px;
             height: 50px;
             background-image: url('https://rembound.com/files/creating-a-snake-game-tutorial-with-html5/snake-graphics.png');
@@ -61,7 +60,7 @@
         }
 
         .sBody {
-            /*Ciało domyślnie skierowane poziomo*/
+            /* Ciało domyślnie skierowane poziomo */
             width: 50px;
             height: 50px;
             background-image: url('https://rembound.com/files/creating-a-snake-game-tutorial-with-html5/snake-graphics.png');
@@ -70,7 +69,7 @@
         }
 
         .sTail {
-            /*Ogon domyślnie skierowany w prawo*/
+            /* Ogon domyślnie skierowany w prawo (ogon jest po lewej, końcówka w prawo) */
             width: 50px;
             height: 50px;
             background-image: url('https://rembound.com/files/creating-a-snake-game-tutorial-with-html5/snake-graphics.png');
@@ -79,7 +78,7 @@
         }
 
         .sCurve {
-            /*Skręt domyślnie skierowany z góry w prawo*/
+            /* Zakręt domyślnie: z góry w prawo (lub z dołu w lewo) */
             width: 50px;
             height: 50px;
             background-image: url('https://rembound.com/files/creating-a-snake-game-tutorial-with-html5/snake-graphics.png');
@@ -135,6 +134,8 @@
             }
         }
 
+        document.addEventListener('keydown', preventArrowScroll);
+
         // Reset gry
         function refreshPage() {
             snake.direction = 'right';
@@ -150,7 +151,6 @@
             const gameBoard = document.getElementById('gameBoard');
             game.render(gameBoard);
 
-            // Usunięcie jabłka i dodanie nowego na pozycji początkowej
             const oldApple = document.querySelector('.apple');
             if (oldApple) {
                 oldApple.parentNode.removeChild(oldApple);
@@ -163,167 +163,174 @@
             appleBox.appendChild(appleDiv);
         }
 
-        // Przy każdym keydownie włącza funckje antyscrollową dla strzałek
-        document.addEventListener('keydown', preventArrowScroll);
-
         let gameStarted = false;
+
+        // Kierunek między segmentami
+        function directionBetween(from, to) {
+            if (to.x > from.x) return 'right';
+            if (to.x < from.x) return 'left';
+            if (to.y > from.y) return 'down';
+            if (to.y < from.y) return 'up';
+            return null;
+        }
+
+        // Obrót segmentu  
+        function getSegmentStyle(index) {
+            const body = snake.body;
+            const seg = body[index];
+
+            // Głowa
+            if (index === 0) {
+                return { cls: 'sHead', rot: dirToAngle(snake.direction) };
+            }
+
+            // Ogon - kierunek od ogona do przedostatniego segmentu
+            if (index === body.length - 1) {
+                const prev = body[index - 1];
+                const dir = directionBetween(seg, prev);
+                return { cls: 'sTail', rot: dirToAngle(dir) };
+            }
+
+            // Segment środkowy (ciało lub zakręt)
+            const prev = body[index - 1];
+            const next = body[index + 1];
+
+            const dirFromPrev = directionBetween(seg, prev); // skąd idzie głowa
+            const dirToNext = directionBetween(seg, next);  // dokąd idzie ogon
+
+            // Prosta linia czy zakręt
+            if (isOpposite(dirFromPrev, dirToNext)) {
+                const rot = (dirFromPrev === 'left' || dirFromPrev === 'right') ? 0 : 90;
+                return { cls: 'sBody', rot };
+            } else {
+                const rot = curveAngle(dirFromPrev, dirToNext);
+                return { cls: 'sCurve', rot };
+            }
+        }
+
+        // Kierunek ruchu na kąt obrotu w stopniach
+        function dirToAngle(dir) {
+            switch (dir) {
+                case 'right': return 0;
+                case 'down': return 90;
+                case 'left': return 180;
+                case 'up': return 270;
+            }
+            return 0;
+        }
+
+        // Czy prosta linia
+        function isOpposite(a, b) {
+            return (a === 'left' && b === 'right') ||
+                (a === 'right' && b === 'left') ||
+                (a === 'up' && b === 'down') ||
+                (a === 'down' && b === 'up');
+        }
+
+        // Obsługa zakrętów
+        function curveAngle(a, b) {
+            const pair = new Set([a, b]);
+            const has = (x, y) => pair.has(x) && pair.has(y);
+
+            if (has('up', 'right')) return 0;
+            if (has('right', 'down')) return 90;
+            if (has('down', 'left')) return 180;
+            if (has('left', 'up')) return 270;
+
+            return 0;
+        }
 
         let snake = {
             direction: 'right',
             body: [
-                { x: 6, y: 8 }, // Początkowe pozycje węża
+                { x: 6, y: 8 },
                 { x: 5, y: 8 },
                 { x: 4, y: 8 }
             ],
-            // FUnkcja generująca węża
+
             renderSnake() {
                 // Czyszczenie starego węża
-                const boxes = document.querySelectorAll('.box');
-                boxes.forEach(box => {
-                    if (box.classList.contains('snake')) {
-                        box.classList.remove('snake', 'sHead', 'sBody', 'sTail');
-                    }
+                document.querySelectorAll('.snake').forEach(box => {
+                    box.classList.remove('snake', 'sHead', 'sBody', 'sTail', 'sCurve');
+                    box.style.transform = '';
                 });
 
-                // Robienie nowego
                 this.body.forEach((segment, index) => {
                     const box = document.querySelector(`.box[data-x="${segment.x}"][data-y="${segment.y}"]`);
-                    if (box) {
-                        if (index === 0) {
-                            box.classList.add('sHead');
-                            this.setHeadRotation(box); // Dodaj obrót dla głowy węża
-                        } else if (index === this.body.length - 1) {
-                            box.classList.add('sTail');
-                        } else {
-                            box.classList.add('sBody');
-                        }
-                        box.classList.add('snake');
-                    }
+                    if (!box) return;
+
+                    const { cls, rot } = getSegmentStyle(index);
+                    box.classList.add('snake', cls);
+                    box.style.transform = `rotate(${rot}deg)`;
                 });
             },
-            // Funkcja ustawiająca kierunek obrotu segmentó węża
-            setHeadRotation(box) {
-                let rotation = 'rotate(0deg)'; // Domyślnie nie obraca - elementy skierowane są w prawo
-                switch (snake.direction) {
-                    case 'up':
-                        rotation = 'rotate(-90deg)';
-                        break;
-                    case 'down':
-                        rotation = 'rotate(90deg)';
-                        break;
-                    case 'left':
-                        rotation = 'rotate(180deg)';
-                        break;
-                }
-                box.style.transform = rotation;
-            },
-            // Funkcja przemieszczająca węża
+
             move() {
                 let newHead = { ...this.body[0] };
 
-                // Ustalanie nowej pozycji głowy węża w zależności od kierunku
                 switch (this.direction) {
-                    case 'up':
-                        newHead.y -= 1;
-                        break;
-                    case 'down':
-                        newHead.y += 1;
-                        break;
-                    case 'left':
-                        newHead.x -= 1;
-                        break;
-                    case 'right':
-                        newHead.x += 1;
-                        break;
+                    case 'up': newHead.y -= 1; break;
+                    case 'down': newHead.y += 1; break;
+                    case 'left': newHead.x -= 1; break;
+                    case 'right': newHead.x += 1; break;
                 }
 
-                // Sprawdzenie, czy wąż zjadł jabłko
-                this.eatApple();
-
-                // Sprawdzenie kolizji z brzegami planszy i ciałem własnym
                 if (game.checkCollision(newHead) || this.checkSelfCollision(newHead)) {
-                    clearInterval(snakeLoop); // Zatrzymanie interwału
+                    clearInterval(snakeLoop);
                     document.getElementById('refreshBtn').style.display = 'block';
                     return;
                 }
 
-                // Dodawanie nowej głowy na początek ciała węża
-                this.body.unshift(newHead);
+                // Sprawdzenie czy nowa głowa trafi na jabłko
+                const apple = document.querySelector(`.apple[data-x="${newHead.x}"][data-y="${newHead.y}"]`);
+                if (apple) {
+                    apple.classList.remove('apple');
+                    this.body.unshift(newHead);
+                    game.placeApple();
+                } else {
+                    this.body.unshift(newHead);
+                    this.body.pop();
+                }
+            },
 
-                // Usunięcie ostatniego segmentu węża
-                this.body.pop();
-            },
-            // Funkcja sprawdzająca czy wąż nie uderzył sam w siebie - czy nowa pozycja głowy węża pokrywa się z jakimkolwiek segmentem jego ciała
             checkSelfCollision(newHead) {
-                return this.body.slice(1).some(segment => segment.x === newHead.x && segment.y === newHead.y);
+                return this.body.slice(1).some(s => s.x === newHead.x && s.y === newHead.y);
             },
-            // Funkcja zapobiegająca zawracanie węża o 180st
+
             changeDirection(newDirection) {
                 if (
                     (this.direction === 'up' && newDirection === 'down') ||
                     (this.direction === 'down' && newDirection === 'up') ||
                     (this.direction === 'left' && newDirection === 'right') ||
                     (this.direction === 'right' && newDirection === 'left')
-                ) {
-                    return;
-                }
-
+                ) return;
                 this.direction = newDirection;
-            },
-            // Funckja konsumująca jabluszko
-            eatApple() {
-                const head = this.body[0];
-                const apple = document.querySelector(`.apple[data-x="${head.x}"][data-y="${head.y}"]`);
-
-                if (apple) {
-                    apple.classList.remove('apple');
-                    this.grow();
-                    game.placeApple();
-                }
-            },
-            grow() {
-                const newTail = { ...this.body[this.body.length - 1] };
-                this.body.push(newTail);
             },
         };
 
-        // Funkcja do poruszania wężem
         function kd(event) {
-            // Rozpoczyna grę strzałkami
             if (!gameStarted && event.key.startsWith('Arrow')) {
                 gameStarted = true;
-
                 snakeLoop = setInterval(() => {
                     snake.move();
                     snake.renderSnake();
                 }, 140);
             }
 
-            // WYznacza kierunek
             switch (event.key) {
-                case 'ArrowUp':
-                    snake.changeDirection('up');
-                    break;
-                case 'ArrowDown':
-                    snake.changeDirection('down');
-                    break;
-                case 'ArrowLeft':
-                    snake.changeDirection('left');
-                    break;
-                case 'ArrowRight':
-                    snake.changeDirection('right');
-                    break;
+                case 'ArrowUp': snake.changeDirection('up'); break;
+                case 'ArrowDown': snake.changeDirection('down'); break;
+                case 'ArrowLeft': snake.changeDirection('left'); break;
+                case 'ArrowRight': snake.changeDirection('right'); break;
             }
         }
 
         let game = {
             width: 17,
             height: 17,
-            arr: [],
-            // Funkcja renderująca planszę gry
+
             render(gameBoard) {
                 gameBoard.innerHTML = '';
-
                 for (let i = 0; i < this.height; i++) {
                     for (let j = 0; j < this.width; j++) {
                         const div = document.createElement("div");
@@ -336,42 +343,36 @@
                 }
                 snake.renderSnake();
             },
-            // Funkcja sprawdzająca czy wąż w coś nie uderzył
+
             checkCollision(newHead) {
                 return (
-                    newHead.x === 0 || // Kolizja z lewą krawędzią
-                    newHead.x === this.width - 1 || // Kolizja z prawą krawędzią
-                    newHead.y === 0 || // Kolizja z górną krawędzią
-                    newHead.y === this.height - 1 // Kolizja z dolną krawędzią
+                    newHead.x === 0 ||
+                    newHead.x === this.width - 1 ||
+                    newHead.y === 0 ||
+                    newHead.y === this.height - 1
                 );
             },
-            // Funkcja rozmieszczająca jabłko na losowych koordynatach
+
             placeApple() {
                 let appleX, appleY;
-
-                // Losowanie współrzędnych jabłka na planszy, z wykluczeniem krawędzi
                 do {
                     appleX = Math.floor(Math.random() * (this.width - 2)) + 1;
                     appleY = Math.floor(Math.random() * (this.height - 2)) + 1;
-                } while (snake.body.some(segment => segment.x === appleX && segment.y === appleY));
+                } while (snake.body.some(s => s.x === appleX && s.y === appleY));
 
                 const div = document.createElement("div");
                 div.classList.add("apple");
                 div.setAttribute('data-x', appleX);
                 div.setAttribute('data-y', appleY);
                 const applePos = document.querySelector(`.box[data-x="${appleX}"][data-y="${appleY}"]`);
-                div.style.transform = 'rotate(0deg)';
-                applePos.style.transform = 'rotate(0deg)';
                 applePos.appendChild(div);
             }
         };
 
-        // Początkowe rozstawienie planszy gry
         function PlayField() {
             const gameBoard = document.getElementById("gameBoard");
             game.render(gameBoard);
 
-            // Rozstawienie pierwszego jabłka na stałych współrzędnych x=10, y=8
             const appleDiv = document.createElement("div");
             appleDiv.classList.add("apple");
             appleDiv.setAttribute('data-x', 10);
@@ -384,9 +385,7 @@
 
 <body onload="PlayField()" onkeydown="kd(event)">
     <h1>Snake</h1>
-    <!-- https://rembound.com/files/creating-a-snake-game-tutorial-with-html5/snake-graphics.png -->
-    <div id="gameBoard">
-    </div>
+    <div id="gameBoard"></div>
     <button id="refreshBtn" onclick="refreshPage()">Restart</button>
 </body>
 
