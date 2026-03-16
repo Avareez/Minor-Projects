@@ -423,14 +423,6 @@
             ctx.fillStyle = 'rgba(255,255,255,0.7)';
             ctx.fillText('FINISH', 0, 0);
             ctx.restore();
-
-            ctx.save();
-            ctx.globalAlpha = 0.35;
-            for (let i = 0; i < 4; i++) {
-                ctx.fillStyle = i % 2 === 0 ? '#fff' : '#FF6B00';
-                ctx.fillRect(748, 390 + i * 12, 8, 10);
-            }
-            ctx.restore();
         }
 
         function isPlayerOnTrack(p) {
@@ -566,7 +558,7 @@
             players.forEach((p, i) => {
                 const div = document.createElement('div');
                 div.className = 'lap-pill';
-                const laps = Math.max(0, p.laps);
+                const laps = Math.max(0, p.laps + 1);
                 div.innerHTML = `
             <div class="lap-pip" style="background:${p.col.stroke};box-shadow:0 0 6px ${p.col.stroke}"></div>
             <span>P${i + 1}</span>
@@ -579,7 +571,7 @@
         function checkWinner() {
             if (winnerAnnounced) return;
             const alive = players.filter(p => p.alive);
-            const done = players.find(p => p.laps <= 0);
+            const done = players.find(p => p.laps + 1 <= 0);
 
             if (done) {
                 winnerAnnounced = true;
